@@ -1,327 +1,367 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ashley's Impact & Investment Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<title>Ashley — Impact & Investment Dashboard</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
-:root{--bg:#0f0f14;--surface:#17171f;--surface2:#1e1e28;--surface3:#25252f;--border:rgba(255,255,255,0.07);--text:#f0eff5;--muted:#8886a0;--accent:#c8a96e;--accent2:#7c6fff;--accent3:#4ecfa4;--accent4:#e06b7d;--accent5:#5bbfdf;}
+
+:root {
+  --bg:#0f0f14; --surface:#17171f; --surface2:#1e1e28; --surface3:#25252f;
+  --border:rgba(255,255,255,0.07); --text:#f0eff5; --muted:#8886a0;
+  --gold:#c8a96e; --purple:#7c6fff; --green:#4ecfa4; --red:#e06b7d; --blue:#5bbfdf;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(124,111,255,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
-body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(200,169,110,0.06) 0%,transparent 70%);pointer-events:none;z-index:0;}
-.shell{position:relative;z-index:1;display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
-.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:32px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.sidebar-logo{padding:0 24px 28px;border-bottom:1px solid var(--border);margin-bottom:20px;}
-.sidebar-logo .name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--accent);letter-spacing:.02em;line-height:1.2;}
-.sidebar-logo .role{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
-.nav-section{padding:0 16px;margin-bottom:8px;}
-.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);padding:8px 8px 6px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13.5px;font-weight:400;transition:all .2s;border:1px solid transparent;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh;}
+body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(124,111,255,.07),transparent 70%);pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(200,169,110,.06),transparent 70%);pointer-events:none;z-index:0;}
+.shell{position:relative;z-index:1;display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:32px 0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.logo{padding:0 24px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.logo-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);}
+.logo-role{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+.nav-section{padding:0 16px;margin-bottom:4px;}
+.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);padding:10px 8px 5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:13px;transition:all .18s;border:1px solid transparent;}
 .nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(124,111,255,.08));border-color:rgba(200,169,110,.2);color:var(--accent);font-weight:500;}
-.nav-icon{font-size:15px;width:18px;text-align:center;}
-.sidebar-footer{margin-top:auto;padding:20px 24px 0;border-top:1px solid var(--border);}
-.sidebar-footer .year-badge{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
-.main{padding:36px 40px;overflow-y:auto;}
-.page{display:none;animation:fadeUp .3s ease;}
+.nav-item.active{background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(124,111,255,.08));border-color:rgba(200,169,110,.2);color:var(--gold);font-weight:500;}
+.nav-icon{font-size:14px;width:18px;text-align:center;}
+.sidebar-foot{margin-top:auto;padding:20px 24px 0;border-top:1px solid var(--border);}
+.sidebar-foot .yr{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+
+/* MAIN */
+.main{flex:1;padding:36px 40px;min-width:0;}
+.page{display:none;}
 .page.active{display:block;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;}
-.page-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;line-height:1.1;color:var(--text);}
-.page-subtitle{font-size:13px;color:var(--muted);margin-top:4px;}
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:border-color .2s;}
-.stat-card:hover{border-color:rgba(200,169,110,.25);}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--accent));opacity:.6;}
-.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px;}
-.stat-value{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--text);line-height:1;}
-.stat-sub{font-size:12px;color:var(--muted);margin-top:5px;}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px;}
-.grid-65-35{display:grid;grid-template-columns:1.8fr 1fr;gap:20px;margin-bottom:24px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s;}
-.card:hover{border-color:rgba(255,255,255,.12);}
-.card-title{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
-.card-title span{color:var(--accent);}
-.chart-wrap{position:relative;height:220px;}
-.chart-wrap-tall{position:relative;height:280px;}
-.data-table{width:100%;border-collapse:collapse;font-size:13px;}
-.data-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:0 12px 10px 0;border-bottom:1px solid var(--border);font-weight:500;}
-.data-table td{padding:10px 12px 10px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text);vertical-align:middle;}
-.data-table tr:last-child td{border-bottom:none;}
-.data-table tr:hover td{background:rgba(255,255,255,.02);}
-.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;letter-spacing:.03em;}
-.badge-gold{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.25);}
-.badge-purple{background:rgba(124,111,255,.15);color:var(--accent2);border:1px solid rgba(124,111,255,.25);}
-.badge-green{background:rgba(78,207,164,.12);color:var(--accent3);border:1px solid rgba(78,207,164,.2);}
-.badge-red{background:rgba(224,107,125,.12);color:var(--accent4);border:1px solid rgba(224,107,125,.2);}
-.badge-blue{background:rgba(91,191,223,.12);color:var(--accent5);border:1px solid rgba(91,191,223,.2);}
-.badge-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid rgba(255,255,255,.08);}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
-.form-full{grid-column:1/-1;}
-.form-group{display:flex;flex-direction:column;gap:5px;}
-.form-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;}
-.form-input,.form-select,.form-textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;transition:border-color .2s;outline:none;width:100%;}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(200,169,110,.4);}
-.form-textarea{resize:vertical;min-height:70px;}
-.form-select option{background:var(--surface2);}
-.btn{padding:9px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s;}
-.btn-primary{background:var(--accent);color:#0f0f14;}
-.btn-primary:hover{background:#d4b97a;transform:translateY(-1px);}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
-.btn-ghost:hover{background:var(--surface2);color:var(--text);}
-.btn-danger{background:rgba(224,107,125,.15);color:var(--accent4);border:1px solid rgba(224,107,125,.25);}
-.btn-danger:hover{background:rgba(224,107,125,.25);}
-.btn-row{display:flex;gap:10px;margin-top:4px;}
-.pill-tabs{display:flex;gap:8px;background:var(--surface2);border-radius:10px;padding:4px;margin-bottom:22px;width:fit-content;}
-.pill-tab{padding:7px 16px;border-radius:7px;font-size:13px;cursor:pointer;color:var(--muted);font-weight:400;transition:all .2s;border:none;background:none;font-family:'DM Sans',sans-serif;}
-.pill-tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 6px rgba(0,0,0,.3);}
-.log-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start;}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:30px;}
+.ph-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;line-height:1.1;}
+.ph-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:14px;margin-bottom:26px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--gold));opacity:.7;}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:7px;}
+.stat-value{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;line-height:1;}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+.g6535{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;margin-bottom:20px;}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.card-title{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.card-title em{color:var(--gold);font-style:normal;}
+.chart-box{position:relative;height:220px;}
+.chart-box-tall{position:relative;height:270px;}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:0 10px 9px 0;border-bottom:1px solid var(--border);}
+.tbl td{padding:9px 10px 9px 0;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,255,255,.02);}
+
+/* BADGES */
+.b{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.b-gold{background:rgba(200,169,110,.15);color:var(--gold);border:1px solid rgba(200,169,110,.25);}
+.b-purple{background:rgba(124,111,255,.15);color:var(--purple);border:1px solid rgba(124,111,255,.25);}
+.b-green{background:rgba(78,207,164,.12);color:var(--green);border:1px solid rgba(78,207,164,.2);}
+.b-red{background:rgba(224,107,125,.12);color:var(--red);border:1px solid rgba(224,107,125,.2);}
+.b-blue{background:rgba(91,191,223,.12);color:var(--blue);border:1px solid rgba(91,191,223,.2);}
+.b-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid rgba(255,255,255,.08);}
+
+/* FORMS */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.fgfull{grid-column:1/-1;}
+.flabel{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;display:block;}
+.fin,.fsel,.ftxt{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color .18s;}
+.fin:focus,.fsel:focus,.ftxt:focus{border-color:rgba(200,169,110,.4);}
+.ftxt{resize:vertical;min-height:65px;}
+.fsel option{background:var(--surface2);}
+
+/* BUTTONS */
+.btn{padding:8px 18px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .18s;}
+.btn-p{background:var(--gold);color:#0f0f14;}
+.btn-p:hover{background:#d4b97a;}
+.btn-g{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-g:hover{background:var(--surface2);color:var(--text);}
+.btn-d{background:rgba(224,107,125,.15);color:var(--red);border:1px solid rgba(224,107,125,.25);}
+.btn-d:hover{background:rgba(224,107,125,.25);}
+.btn-row{display:flex;gap:9px;margin-top:6px;}
+
+/* FILTER ROW */
+.frow{display:flex;gap:9px;margin-bottom:18px;align-items:center;flex-wrap:wrap;}
+.frow .fsel{width:auto;min-width:125px;}
+.frow .fin{width:190px;}
+.sp{flex:1;}
+
+/* LOG ITEMS */
+.log-item{display:flex;gap:13px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:flex-start;}
 .log-item:last-child{border-bottom:none;}
-.log-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.log-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
 .log-meta{flex:1;min-width:0;}
-.log-title{font-size:13.5px;font-weight:500;color:var(--text);line-height:1.3;}
+.log-title{font-size:13px;font-weight:500;line-height:1.3;}
 .log-detail{font-size:12px;color:var(--muted);margin-top:3px;}
+.log-note{font-size:11px;color:var(--muted);margin-top:3px;font-style:italic;opacity:.75;}
 .log-right{text-align:right;flex-shrink:0;}
 .log-date{font-size:11px;color:var(--muted);}
-.log-reach{font-size:12px;color:var(--accent3);margin-top:3px;}
-.filter-row{display:flex;gap:10px;margin-bottom:20px;align-items:center;flex-wrap:wrap;}
-.filter-row .form-select{width:auto;min-width:130px;}
-.filter-row .form-input{width:200px;}
-.spacer{flex:1;}
-.scroll-list{max-height:320px;overflow-y:auto;padding-right:4px;}
-.scroll-list::-webkit-scrollbar{width:3px;}
-.scroll-list::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
-.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
-.empty-icon{font-size:32px;margin-bottom:10px;opacity:.5;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:fadeUp .25s ease;}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
-.modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;}
-.modal-close{cursor:pointer;font-size:20px;line-height:1;border:none;background:none;color:var(--muted);transition:color .2s;}
-.modal-close:hover{color:var(--text);}
-.toast-container{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:8px;}
-.toast{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text);animation:slideIn .25s ease;display:flex;align-items:center;gap:8px;}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-.goal-card{background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid var(--c,var(--accent));}
-.goal-name{font-size:13.5px;font-weight:500;margin-bottom:6px;}
-.goal-descriptor{font-size:12px;color:var(--muted);line-height:1.5;}
-.progress-bar{height:5px;background:var(--surface3);border-radius:3px;margin-top:8px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 1s ease;}
+.log-actions{display:flex;gap:5px;margin-top:7px;justify-content:flex-end;}
+.scroller{max-height:340px;overflow-y:auto;padding-right:3px;}
+.scroller::-webkit-scrollbar{width:3px;}
+.scroller::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+/* PILL TABS */
+.ptabs{display:flex;gap:6px;background:var(--surface2);border-radius:9px;padding:4px;margin-bottom:20px;width:fit-content;}
+.ptab{padding:6px 15px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--muted);border:none;background:none;font-family:'DM Sans',sans-serif;transition:all .18s;}
+.ptab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 5px rgba(0,0,0,.3);}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;}
+.modal-x{cursor:pointer;font-size:19px;border:none;background:none;color:var(--muted);}
+.modal-x:hover{color:var(--text);}
+
+/* TOAST */
+.toasts{position:fixed;bottom:22px;right:22px;z-index:200;display:flex;flex-direction:column;gap:7px;}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 16px;font-size:13px;color:var(--text);}
+
+/* GOAL CARDS */
+.goal{background:var(--surface2);border-radius:10px;padding:15px;margin-bottom:11px;border-left:3px solid var(--c,var(--gold));}
+.goal-name{font-size:13px;font-weight:500;margin-bottom:5px;}
+.goal-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+.pbar{height:4px;background:var(--surface3);border-radius:3px;margin-top:9px;overflow:hidden;}
+.pfill{height:100%;border-radius:3px;background:var(--gold);}
+
+/* EMPTY */
+.empty{text-align:center;padding:38px 20px;color:var(--muted);font-size:13px;}
+.empty-icon{font-size:30px;margin-bottom:9px;opacity:.5;}
+
+/* EDITABLE CELLS */
+.ec{border-radius:4px;padding:2px 5px;outline:none;transition:background .15s,box-shadow .15s;cursor:text;white-space:nowrap;overflow:hidden;max-width:180px;text-overflow:ellipsis;}
+.ec:hover{background:rgba(255,255,255,.05);}
+.ec:focus{background:var(--surface2);box-shadow:0 0 0 1px rgba(200,169,110,.4);white-space:normal;overflow:visible;}
+.ec-sel{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:3px 6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;outline:none;cursor:pointer;max-width:140px;}
+.ec-sel:focus{border-color:rgba(200,169,110,.4);}
+.ec-sel option{background:var(--surface2);}
+.mv-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:1px 5px;border-radius:3px;line-height:1;transition:color .15s,background .15s;}
+.mv-btn:hover:not([disabled]){color:var(--gold);background:rgba(200,169,110,.1);}
+.mv-btn[disabled]{opacity:.2;cursor:default;}
 </style>
 </head>
 <body>
 <div class="shell">
 
-<!-- SIDEBAR -->
+<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="name">Ashley</div>
-    <div class="role">Impact &amp; Investment Tracker</div>
+  <div class="logo">
+    <div class="logo-name">Ashley</div>
+    <div class="logo-role">Impact &amp; Investment</div>
   </div>
   <div class="nav-section">
     <div class="nav-label">Overview</div>
-    <div class="nav-item active" onclick="goTo('overview',this)"><span class="nav-icon">◈</span> Dashboard</div>
+    <div class="nav-item active" onclick="nav('overview',this)"><span class="nav-icon">◈</span>Dashboard</div>
   </div>
   <div class="nav-section">
     <div class="nav-label">My Impact</div>
-    <div class="nav-item" onclick="goTo('talks',this)"><span class="nav-icon">🎤</span> Talks, Panels &amp; Interviews</div>
-    <div class="nav-item" onclick="goTo('writing',this)"><span class="nav-icon">✍️</span> Writing</div>
-    <div class="nav-item" onclick="goTo('consulting',this)"><span class="nav-icon">💡</span> Consultations</div>
+    <div class="nav-item" onclick="nav('talks',this)"><span class="nav-icon">🎤</span>Talks, Panels &amp; Interviews</div>
+    <div class="nav-item" onclick="nav('writing',this)"><span class="nav-icon">✍️</span>Writing</div>
+    <div class="nav-item" onclick="nav('consulting',this)"><span class="nav-icon">💡</span>Consultations</div>
   </div>
   <div class="nav-section">
     <div class="nav-label">Investments</div>
-    <div class="nav-item" onclick="goTo('budget',this)"><span class="nav-icon">📊</span> Budget Tracker</div>
-    <div class="nav-item" onclick="goTo('portfolio',this)"><span class="nav-icon">🌐</span> Portfolio</div>
-    <div class="nav-item" onclick="goTo('strategy',this)"><span class="nav-icon">🗺️</span> Strategic Goals</div>
+    <div class="nav-item" onclick="nav('budget',this)"><span class="nav-icon">📊</span>Budget Tracker</div>
+    <div class="nav-item" onclick="nav('portfolio',this)"><span class="nav-icon">🌐</span>Portfolio</div>
+    <div class="nav-item" onclick="nav('strategy',this)"><span class="nav-icon">🗺️</span>Strategic Goals</div>
   </div>
-  <div class="sidebar-footer">
-    <div class="year-badge">2025 – 2027 Cycle</div>
-    <div style="margin-top:14px;">
-      <button class="btn btn-ghost" style="width:100%;font-size:12px;padding:8px 12px;" onclick="openExportModal()">⬇ Export to Excel</button>
-    </div>
+  <div class="sidebar-foot">
+    <div class="yr">2025 – 2027 Cycle</div>
+    <div style="margin-top:13px;"><button class="btn btn-g" style="width:100%;font-size:12px;padding:7px 11px;" onclick="openExport()">⬇ Export to Excel</button></div>
   </div>
 </aside>
 
-<!-- MAIN -->
+<!-- ═══ MAIN ═══ -->
 <main class="main">
 
 <!-- OVERVIEW -->
 <div class="page active" id="page-overview">
-  <div class="page-header">
-    <div><div class="page-title">Good morning, Ashley ☀️</div><div class="page-subtitle">Here's your impact and investment snapshot</div></div>
+  <div class="ph">
+    <div><div class="ph-title">Good morning, Ashley ☀️</div><div class="ph-sub">Your impact and investment snapshot</div></div>
     <div style="font-size:12px;color:var(--muted);" id="today-date"></div>
   </div>
-  <div class="stats-row">
-    <div class="stat-card" style="--c:var(--accent)"><div class="stat-label">Talks, Panels &amp; Interviews</div><div class="stat-value" id="ov-talks">0</div><div class="stat-sub">across all venues</div></div>
-    <div class="stat-card" style="--c:var(--accent3)"><div class="stat-label">Pieces Written</div><div class="stat-value" id="ov-writing">0</div><div class="stat-sub">articles, reports &amp; posts</div></div>
-    <div class="stat-card" style="--c:var(--accent5)"><div class="stat-label">Consultations</div><div class="stat-value" id="ov-consult">0</div><div class="stat-sub">internal &amp; external</div></div>
-    <div class="stat-card" style="--c:var(--accent4)"><div class="stat-label">2026 Budget</div><div class="stat-value">$10M</div><div class="stat-sub">annual investment cap</div></div>
+  <div class="stats">
+    <div class="stat" style="--c:var(--gold)"><div class="stat-label">Talks, Panels &amp; Interviews</div><div class="stat-value" id="ov-talks">0</div></div>
+    <div class="stat" style="--c:var(--green)"><div class="stat-label">Pieces Written</div><div class="stat-value" id="ov-writing">0</div></div>
+    <div class="stat" style="--c:var(--blue)"><div class="stat-label">Consultations</div><div class="stat-value" id="ov-consult">0</div></div>
+    <div class="stat" style="--c:var(--red)"><div class="stat-label">2026 Budget</div><div class="stat-value">$10M</div><div class="stat-sub">annual cap</div></div>
   </div>
-  <div class="grid-65-35">
-    <div class="card"><div class="card-title"><span>◈</span> Impact Activity — Last 12 Months</div><div class="chart-wrap"><canvas id="chart-activity"></canvas></div></div>
-    <div class="card"><div class="card-title"><span>◈</span> Impact by Type</div><div class="chart-wrap"><canvas id="chart-types"></canvas></div></div>
+  <div class="g6535">
+    <div class="card"><div class="card-title"><em>◈</em> Impact Activity — Last 12 Months</div><div class="chart-box" id="bar-overview"></div></div>
+    <div class="card"><div class="card-title"><em>◈</em> Impact by Type</div><div class="chart-box" id="donut-overview" style="display:flex;align-items:center;justify-content:center;"></div></div>
   </div>
-  <div class="grid-2">
-    <div class="card"><div class="card-title"><span>◈</span> Recent Impact Entries</div><div class="scroll-list" id="recent-impact-list"><div class="empty-state"><div class="empty-icon">📋</div>No entries yet</div></div></div>
-    <div class="card"><div class="card-title"><span>◈</span> 2026 Investment Forecast by Goal</div><div id="goal-budget-list"></div></div>
+  <div class="g2">
+    <div class="card"><div class="card-title"><em>◈</em> Recent Entries</div><div class="scroller" id="recent-list"><div class="empty"><div class="empty-icon">📋</div>No entries yet.</div></div></div>
+    <div class="card"><div class="card-title"><em>◈</em> 2026 Investment by Goal</div><div id="goal-list"></div></div>
   </div>
 </div>
 
-<!-- TALKS PANELS INTERVIEWS -->
+<!-- TALKS -->
 <div class="page" id="page-talks">
-  <div class="page-header">
-    <div><div class="page-title">Talks, Panels &amp; Interviews</div><div class="page-subtitle">Keynotes, panels, conference talks, media interviews, podcasts, press quotes</div></div>
-    <button class="btn btn-primary" onclick="openModal('talks')">+ Add Entry</button>
+  <div class="ph">
+    <div><div class="ph-title">Talks, Panels &amp; Interviews</div><div class="ph-sub">Keynotes, panels, conference talks, media interviews, podcasts, press quotes</div></div>
+    <button class="btn btn-p" onclick="openAdd('talks')">+ Add Entry</button>
   </div>
-  <div class="stats-row">
-    <div class="stat-card" style="--c:var(--accent)"><div class="stat-label">Total Entries</div><div class="stat-value" id="stat-talks-total">0</div></div>
-    <div class="stat-card" style="--c:var(--accent2)"><div class="stat-label">This Year</div><div class="stat-value" id="stat-talks-year">0</div></div>
-    <div class="stat-card" style="--c:var(--accent3)"><div class="stat-label">Keynotes &amp; Talks</div><div class="stat-value" id="stat-talks-keynote">0</div></div>
-    <div class="stat-card" style="--c:var(--accent2)"><div class="stat-label">Panels &amp; Chairs</div><div class="stat-value" id="stat-talks-panels">0</div></div>
-    <div class="stat-card" style="--c:var(--accent5)"><div class="stat-label">Interviews &amp; Press</div><div class="stat-value" id="stat-talks-interview">0</div></div>
+  <div class="stats">
+    <div class="stat" style="--c:var(--gold)"><div class="stat-label">Total</div><div class="stat-value" id="st-talks-total">0</div></div>
+    <div class="stat" style="--c:var(--purple)"><div class="stat-label">This Year</div><div class="stat-value" id="st-talks-yr">0</div></div>
+    <div class="stat" style="--c:var(--green)"><div class="stat-label">Keynotes &amp; Talks</div><div class="stat-value" id="st-talks-kt">0</div></div>
+    <div class="stat" style="--c:var(--purple)"><div class="stat-label">Panels &amp; Chairs</div><div class="stat-value" id="st-talks-p">0</div></div>
+    <div class="stat" style="--c:var(--blue)"><div class="stat-label">Interviews &amp; Press</div><div class="stat-value" id="st-talks-i">0</div></div>
   </div>
-  <div class="filter-row">
-    <select class="form-select" id="filter-talks-type" onchange="renderTalksList()">
+  <div class="frow">
+    <select class="fsel" id="f-talks-type" onchange="renderTalks()">
       <option value="">All Types</option>
-      <option>Keynote</option><option>Conference Talk</option>
-      <option>Panelist</option><option>Moderator</option><option>Chair</option><option>Discussant</option>
-      <option>Media Interview</option><option>Podcast</option><option>Webinar</option>
-      <option>Quoted / Press</option><option>Peer Reviewer</option><option>Contributor</option><option>Other</option>
+      <option>Keynote</option><option>Conference Talk</option><option>Panelist</option><option>Moderator</option>
+      <option>Chair</option><option>Discussant</option><option>Media Interview</option><option>Podcast</option>
+      <option>Webinar</option><option>Quoted / Press</option><option>Peer Reviewer</option><option>Contributor</option><option>Other</option>
     </select>
-    <select class="form-select" id="filter-talks-year" onchange="renderTalksList()">
+    <select class="fsel" id="f-talks-yr" onchange="renderTalks()">
       <option value="">All Years</option>
       <option>2022</option><option>2023</option><option>2024</option><option>2025</option><option>2026</option><option>2027</option>
     </select>
-    <div class="spacer"></div>
-    <input type="text" class="form-input" placeholder="🔍  Search..." id="search-talks" oninput="renderTalksList()">
+    <div class="sp"></div>
+    <input class="fin" placeholder="🔍  Search..." id="s-talks" oninput="renderTalks()">
   </div>
-  <div class="card"><div id="talks-list"><div class="empty-state"><div class="empty-icon">🎤</div>No entries yet.</div></div></div>
+  <div class="card"><div id="talks-list"><div class="empty"><div class="empty-icon">🎤</div>No entries yet.</div></div></div>
 </div>
 
 <!-- WRITING -->
 <div class="page" id="page-writing">
-  <div class="page-header">
-    <div><div class="page-title">Writing</div><div class="page-subtitle">Articles, reports, blog posts, op-eds, and policy briefs</div></div>
-    <button class="btn btn-primary" onclick="openModal('writing')">+ Add Entry</button>
+  <div class="ph">
+    <div><div class="ph-title">Writing</div><div class="ph-sub">Articles, reports, blog posts, op-eds, policy briefs</div></div>
+    <button class="btn btn-p" onclick="openAdd('writing')">+ Add Entry</button>
   </div>
-  <div class="stats-row">
-    <div class="stat-card" style="--c:var(--accent3)"><div class="stat-label">Total Pieces</div><div class="stat-value" id="stat-writing-total">0</div></div>
-    <div class="stat-card" style="--c:var(--accent)"><div class="stat-label">Reports</div><div class="stat-value" id="stat-writing-reports">0</div></div>
-    <div class="stat-card" style="--c:var(--accent2)"><div class="stat-label">Articles / Op-Eds</div><div class="stat-value" id="stat-writing-articles">0</div></div>
-    <div class="stat-card" style="--c:var(--accent5)"><div class="stat-label">Blog Posts</div><div class="stat-value" id="stat-writing-blogs">0</div></div>
+  <div class="stats">
+    <div class="stat" style="--c:var(--green)"><div class="stat-label">Total</div><div class="stat-value" id="st-wr-total">0</div></div>
+    <div class="stat" style="--c:var(--gold)"><div class="stat-label">Reports</div><div class="stat-value" id="st-wr-rep">0</div></div>
+    <div class="stat" style="--c:var(--purple)"><div class="stat-label">Articles / Op-Eds</div><div class="stat-value" id="st-wr-art">0</div></div>
+    <div class="stat" style="--c:var(--blue)"><div class="stat-label">Blog Posts</div><div class="stat-value" id="st-wr-blog">0</div></div>
   </div>
-  <div class="filter-row">
-    <select class="form-select" id="filter-writing-type" onchange="renderWritingList()">
+  <div class="frow">
+    <select class="fsel" id="f-wr-type" onchange="renderWriting()">
       <option value="">All Types</option>
       <option>Research Report</option><option>Article</option><option>Op-Ed</option>
       <option>Blog Post</option><option>Policy Brief</option><option>Other</option>
     </select>
-    <select class="form-select" id="filter-writing-status" onchange="renderWritingList()">
+    <select class="fsel" id="f-wr-status" onchange="renderWriting()">
       <option value="">All Status</option><option>Published</option><option>In Review</option><option>Draft</option>
     </select>
-    <input type="text" class="form-input" placeholder="🔍  Search..." id="search-writing" oninput="renderWritingList()">
+    <input class="fin" placeholder="🔍  Search..." id="s-writing" oninput="renderWriting()">
   </div>
-  <div class="card"><div id="writing-list"><div class="empty-state"><div class="empty-icon">✍️</div>No writing entries yet.</div></div></div>
+  <div class="card"><div id="writing-list"><div class="empty"><div class="empty-icon">✍️</div>No entries yet.</div></div></div>
 </div>
 
 <!-- CONSULTING -->
 <div class="page" id="page-consulting">
-  <div class="page-header">
-    <div><div class="page-title">Expert Consultations</div><div class="page-subtitle">Internal and external consulting, advisory, and expert input</div></div>
-    <button class="btn btn-primary" onclick="openModal('consulting')">+ Add Entry</button>
+  <div class="ph">
+    <div><div class="ph-title">Expert Consultations</div><div class="ph-sub">Internal and external consulting, advisory, expert input</div></div>
+    <button class="btn btn-p" onclick="openAdd('consulting')">+ Add Entry</button>
   </div>
-  <div class="stats-row">
-    <div class="stat-card" style="--c:var(--accent5)"><div class="stat-label">Total</div><div class="stat-value" id="stat-consult-total">0</div></div>
-    <div class="stat-card" style="--c:var(--accent)"><div class="stat-label">Internal</div><div class="stat-value" id="stat-consult-internal">0</div></div>
-    <div class="stat-card" style="--c:var(--accent2)"><div class="stat-label">External</div><div class="stat-value" id="stat-consult-external">0</div></div>
-    <div class="stat-card" style="--c:var(--accent3)"><div class="stat-label">This Month</div><div class="stat-value" id="stat-consult-month">0</div></div>
+  <div class="stats">
+    <div class="stat" style="--c:var(--blue)"><div class="stat-label">Total</div><div class="stat-value" id="st-co-total">0</div></div>
+    <div class="stat" style="--c:var(--gold)"><div class="stat-label">Internal</div><div class="stat-value" id="st-co-int">0</div></div>
+    <div class="stat" style="--c:var(--purple)"><div class="stat-label">External</div><div class="stat-value" id="st-co-ext">0</div></div>
+    <div class="stat" style="--c:var(--green)"><div class="stat-label">This Month</div><div class="stat-value" id="st-co-mon">0</div></div>
   </div>
-  <div class="filter-row">
-    <select class="form-select" id="filter-consult-type" onchange="renderConsultList()">
-      <option value="">Internal &amp; External</option><option>Internal</option><option>External</option>
+  <div class="frow">
+    <select class="fsel" id="f-co-type" onchange="renderConsult()">
+      <option value="">All</option><option>Internal</option><option>External</option>
     </select>
-    <input type="text" class="form-input" placeholder="🔍  Search..." id="search-consult" oninput="renderConsultList()">
+    <input class="fin" placeholder="🔍  Search..." id="s-consult" oninput="renderConsult()">
   </div>
-  <div class="card"><div id="consult-list"><div class="empty-state"><div class="empty-icon">💡</div>No consultations yet.</div></div></div>
+  <div class="card"><div id="consult-list"><div class="empty"><div class="empty-icon">💡</div>No entries yet.</div></div></div>
 </div>
 
 <!-- BUDGET -->
 <div class="page" id="page-budget">
-  <div class="page-header"><div><div class="page-title">Budget Tracker</div><div class="page-subtitle">2022–2029 investment forecast from your planning file</div></div></div>
-  <div class="stats-row">
-    <div class="stat-card" style="--c:var(--accent)"><div class="stat-label">Annual Budget</div><div class="stat-value">$10M</div><div class="stat-sub">per year</div></div>
-    <div class="stat-card" style="--c:var(--accent3)"><div class="stat-label">2026 Forecasted</div><div class="stat-value">$7.0M</div><div class="stat-sub">active investments</div></div>
-    <div class="stat-card" style="--c:var(--accent5)"><div class="stat-label">2026 Available</div><div class="stat-value">$975K</div><div class="stat-sub">uncommitted</div></div>
-    <div class="stat-card" style="--c:var(--accent4)"><div class="stat-label">APC Wind-Down</div><div class="stat-value">$500K</div><div class="stat-sub">2026 target</div></div>
+  <div class="ph"><div><div class="ph-title">Budget Tracker</div><div class="ph-sub">2022–2029 investment forecast</div></div></div>
+  <div class="stats">
+    <div class="stat" style="--c:var(--gold)"><div class="stat-label">Annual Budget</div><div class="stat-value">$10M</div></div>
+    <div class="stat" style="--c:var(--green)"><div class="stat-label">2026 Forecasted</div><div class="stat-value">$7.0M</div></div>
+    <div class="stat" style="--c:var(--blue)"><div class="stat-label">2026 Available</div><div class="stat-value">$975K</div></div>
+    <div class="stat" style="--c:var(--red)"><div class="stat-label">APC Wind-Down</div><div class="stat-value">$500K</div></div>
   </div>
-  <div class="grid-2">
-    <div class="card"><div class="card-title"><span>◈</span> Investment Portfolio by Year ($M)</div><div class="chart-wrap-tall"><canvas id="chart-budget"></canvas></div></div>
-    <div class="card"><div class="card-title"><span>◈</span> 2026 Budget Allocation</div><div class="chart-wrap-tall"><canvas id="chart-budget-pie"></canvas></div></div>
+  <div class="g2">
+    <div class="card"><div class="card-title"><em>◈</em> Portfolio by Year ($M)</div><div class="chart-box-tall"><canvas id="chart-budget"></canvas></div></div>
+    <div class="card"><div class="card-title"><em>◈</em> 2026 Allocation</div><div class="chart-box-tall"><canvas id="chart-budget-pie"></canvas></div></div>
   </div>
-  <div class="card">
-    <div class="card-title"><span>◈</span> Investment Pipeline</div>
-    <div class="filter-row" style="margin-bottom:14px;">
-      <select class="form-select" id="filter-inv-status" onchange="renderInvTable()">
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title"><em>◈</em> Investment Pipeline</div>
+    <div class="frow" style="margin-bottom:13px;">
+      <select class="fsel" id="f-inv-status" onchange="renderInvTable()">
         <option value="">All Statuses</option>
         <option>Yes</option><option>Yes - in progress</option><option>Yes - likely to renew</option>
         <option>Probable</option><option>Under Consideration</option><option>Closed</option><option>No</option>
       </select>
-      <select class="form-select" id="filter-inv-geo" onchange="renderInvTable()">
+      <select class="fsel" id="f-inv-geo" onchange="renderInvTable()">
         <option value="">All Regions</option>
         <option>USA</option><option>UK</option><option>Europe</option><option>Africa</option><option>Canada</option>
       </select>
-      <input type="text" class="form-input" placeholder="🔍  Search partner..." id="search-inv" oninput="renderInvTable()">
+      <input class="fin" placeholder="🔍  Search..." id="s-inv" oninput="renderInvTable()">
     </div>
     <div style="overflow-x:auto;">
-      <table class="data-table">
-        <thead><tr><th>Partner</th><th>Type</th><th>Decision</th><th>Location</th><th>2025 ($)</th><th>2026 ($)</th><th>2027 ($)</th><th>Impact</th><th>Geo Reach</th></tr></thead>
-        <tbody id="inv-tbody"></tbody>
-      </table>
+      <table class="tbl"><thead><tr><th>Partner</th><th>Type</th><th>Decision</th><th>Location</th><th>2025</th><th>2026</th><th>2027</th><th>Impact</th><th>Geo</th><th style="width:36px"></th></tr></thead>
+      <tbody id="inv-tbody"></tbody></table>
     </div>
   </div>
 </div>
 
 <!-- PORTFOLIO -->
 <div class="page" id="page-portfolio">
-  <div class="page-header"><div><div class="page-title">Investment Portfolio</div><div class="page-subtitle">Full partner landscape</div></div></div>
-  <div class="pill-tabs">
-    <button class="pill-tab active" onclick="setPortfolioTab('active',this)">✅ Active</button>
-    <button class="pill-tab" onclick="setPortfolioTab('pipeline',this)">🔄 Pipeline</button>
-    <button class="pill-tab" onclick="setPortfolioTab('closed',this)">🔒 Closed / Declined</button>
+  <div class="ph"><div><div class="ph-title">Investment Portfolio</div><div class="ph-sub">Full partner landscape</div></div></div>
+  <div class="ptabs">
+    <button class="ptab active" onclick="setTab('active',this)">✅ Active</button>
+    <button class="ptab" onclick="setTab('pipeline',this)">🔄 Pipeline</button>
+    <button class="ptab" onclick="setTab('closed',this)">🔒 Closed / Declined</button>
   </div>
-  <div class="grid-2">
-    <div class="card"><div class="card-title"><span>◈</span> Partners by Organization Type</div><div class="chart-wrap"><canvas id="chart-org-type"></canvas></div></div>
-    <div class="card"><div class="card-title"><span>◈</span> Geographic Distribution</div><div class="chart-wrap"><canvas id="chart-geo"></canvas></div></div>
+  <div class="g2">
+    <div class="card"><div class="card-title"><em>◈</em> Partners by Org Type</div><div class="chart-box"><canvas id="chart-org"></canvas></div></div>
+    <div class="card"><div class="card-title"><em>◈</em> Geographic Distribution</div><div class="chart-box"><canvas id="chart-geo"></canvas></div></div>
   </div>
   <div class="card"><div id="portfolio-list"></div></div>
 </div>
 
 <!-- STRATEGY -->
 <div class="page" id="page-strategy">
-  <div class="page-header"><div><div class="page-title">Strategic Goals 2025–2027</div><div class="page-subtitle">Your four pillars and investment alignment</div></div></div>
-  <div class="stats-row">
-    <div class="stat-card" style="--c:var(--accent)"><div class="stat-label">Strategic Pillars</div><div class="stat-value">4</div></div>
-    <div class="stat-card" style="--c:var(--accent2)"><div class="stat-label">Active Projects</div><div class="stat-value">20+</div></div>
-    <div class="stat-card" style="--c:var(--accent3)"><div class="stat-label">3-Year Budget</div><div class="stat-value">$30M</div></div>
-    <div class="stat-card" style="--c:var(--accent5)"><div class="stat-label">Partner Orgs</div><div class="stat-value">25+</div></div>
+  <div class="ph"><div><div class="ph-title">Strategic Goals 2025–2027</div><div class="ph-sub">Four pillars and investment alignment</div></div></div>
+  <div class="stats">
+    <div class="stat" style="--c:var(--gold)"><div class="stat-label">Strategic Pillars</div><div class="stat-value">4</div></div>
+    <div class="stat" style="--c:var(--purple)"><div class="stat-label">Active Projects</div><div class="stat-value">20+</div></div>
+    <div class="stat" style="--c:var(--green)"><div class="stat-label">3-Year Budget</div><div class="stat-value">$30M</div></div>
+    <div class="stat" style="--c:var(--blue)"><div class="stat-label">Partner Orgs</div><div class="stat-value">25+</div></div>
   </div>
-  <div class="grid-2" style="margin-bottom:24px;">
-    <div class="goal-card" style="--c:var(--accent)"><div class="goal-name">🏛️ Demonstrate Foundation Leadership</div><div class="goal-descriptor">Participate and lead in community efforts to affect change in the open research ecosystem.</div><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><span class="badge badge-gold">cOAlition S</span><span class="badge badge-gold">ORFG</span><span class="badge badge-gold">Creative Commons</span><span class="badge badge-gold">ASAPbio</span></div><div style="margin-top:10px;font-size:12px;color:var(--muted);">18% of $30M · ~$5.4M</div><div class="progress-bar"><div class="progress-fill" style="width:18%;background:var(--accent);"></div></div></div>
-    <div class="goal-card" style="--c:var(--accent2)"><div class="goal-name">🌍 Foster Equity &amp; Inclusion in Research</div><div class="goal-descriptor">Enable read/publish for all researchers globally. Support PRC models and diamond open access.</div><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><span class="badge badge-purple">F1000/VeriXiv</span><span class="badge badge-purple">PLOS</span><span class="badge badge-purple">PREreview</span><span class="badge badge-purple">RR\ID</span></div><div style="margin-top:10px;font-size:12px;color:var(--muted);">29% of $30M · ~$8.7M</div><div class="progress-bar"><div class="progress-fill" style="width:29%;background:var(--accent2);"></div></div></div>
-    <div class="goal-card" style="--c:var(--accent3)"><div class="goal-name">⚙️ Effective Policy Implementation</div><div class="goal-descriptor">Upgrade technology efficiency. Increase grant matching to 95%. Ensure outputs are broadly available.</div><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><span class="badge badge-green">OA.Works</span><span class="badge badge-green">OpenAlex</span><span class="badge badge-green">Zendesk</span></div><div style="margin-top:10px;font-size:12px;color:var(--muted);">10% of $30M · ~$3M</div><div class="progress-bar"><div class="progress-fill" style="width:10%;background:var(--accent3);"></div></div></div>
-    <div class="goal-card" style="--c:var(--accent4)"><div class="goal-name">🚀 Innovate &amp; Challenge the Status Quo</div><div class="goal-descriptor">Oversee policy shape and vision. Leverage AI for curation and peer review. New preprint models.</div><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><span class="badge badge-red">PREreview</span><span class="badge badge-red">RR\ID</span><span class="badge badge-red">UNESCO</span></div><div style="margin-top:10px;font-size:12px;color:var(--muted);">14% of $30M · ~$4.2M</div><div class="progress-bar"><div class="progress-fill" style="width:14%;background:var(--accent4);"></div></div></div>
+  <div class="g2" style="margin-bottom:18px;">
+    <div class="goal" style="--c:var(--gold)"><div class="goal-name">🏛️ Demonstrate Foundation Leadership</div><div class="goal-desc">Participate and lead in community efforts to affect change in the open research ecosystem. Share and publicize research.</div><div style="margin-top:9px;display:flex;gap:6px;flex-wrap:wrap;"><span class="b b-gold">cOAlition S</span><span class="b b-gold">ORFG</span><span class="b b-gold">Creative Commons</span><span class="b b-gold">ASAPbio</span></div><div style="margin-top:9px;font-size:12px;color:var(--muted);">18% · ~$5.4M</div><div class="pbar"><div class="pfill" style="width:18%;background:var(--gold);"></div></div></div>
+    <div class="goal" style="--c:var(--purple)"><div class="goal-name">🌍 Foster Equity &amp; Inclusion in Research</div><div class="goal-desc">Enable read/publish for all researchers globally. Support PRC models and diamond open access.</div><div style="margin-top:9px;display:flex;gap:6px;flex-wrap:wrap;"><span class="b b-purple">F1000/VeriXiv</span><span class="b b-purple">PLOS</span><span class="b b-purple">PREreview</span><span class="b b-purple">RR\ID</span></div><div style="margin-top:9px;font-size:12px;color:var(--muted);">29% · ~$8.7M</div><div class="pbar"><div class="pfill" style="width:29%;background:var(--purple);"></div></div></div>
+    <div class="goal" style="--c:var(--green)"><div class="goal-name">⚙️ Effective Policy Implementation</div><div class="goal-desc">Upgrade technology efficiency. Increase grant matching to 95%. Ensure outputs are broadly available.</div><div style="margin-top:9px;display:flex;gap:6px;flex-wrap:wrap;"><span class="b b-green">OA.Works</span><span class="b b-green">OpenAlex</span><span class="b b-green">Zendesk</span></div><div style="margin-top:9px;font-size:12px;color:var(--muted);">10% · ~$3M</div><div class="pbar"><div class="pfill" style="width:10%;background:var(--green);"></div></div></div>
+    <div class="goal" style="--c:var(--red)"><div class="goal-name">🚀 Innovate &amp; Challenge the Status Quo</div><div class="goal-desc">Oversee policy shape and vision. Leverage AI for curation and peer review. New preprint models.</div><div style="margin-top:9px;display:flex;gap:6px;flex-wrap:wrap;"><span class="b b-red">PREreview</span><span class="b b-red">RR\ID</span><span class="b b-red">UNESCO</span></div><div style="margin-top:9px;font-size:12px;color:var(--muted);">14% · ~$4.2M</div><div class="pbar"><div class="pfill" style="width:14%;background:var(--red);"></div></div></div>
   </div>
   <div class="card">
-    <div class="card-title"><span>◈</span> 5-Year Outcome Framework</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px;">
-      <div style="background:var(--surface2);border-radius:10px;padding:16px;"><div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;">Leadership &amp; Policy Influence</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">Evidence-driven policies adopted across key partner countries. Foundation recognized as trusted policy advisor.</div></div>
-      <div style="background:var(--surface2);border-radius:10px;padding:16px;"><div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:8px;">Scientific Knowledge Ecosystem</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">All funded outputs discoverable and systematically interlinked. Preprints treated as first-class research objects.</div></div>
-      <div style="background:var(--surface2);border-radius:10px;padding:16px;"><div style="font-size:12px;font-weight:600;color:var(--accent3);margin-bottom:8px;">Policy Implementation &amp; Accountability</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">Streamlined workflows and dashboards tracking implementation. Research impact measured by reuse and downstream uptake.</div></div>
-      <div style="background:var(--surface2);border-radius:10px;padding:16px;"><div style="font-size:12px;font-weight:600;color:var(--accent4);margin-bottom:8px;">Innovation &amp; Systems Modernization</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">Early adopters establish new models for open and interoperable practices. AI-enabled tools connect preprints, publications, datasets.</div></div>
+    <div class="card-title"><em>◈</em> 5-Year Outcome Framework</div>
+    <div class="g2" style="margin-bottom:0;">
+      <div style="background:var(--surface2);border-radius:9px;padding:14px;"><div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:7px;">Leadership &amp; Policy Influence</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">Evidence-driven policies adopted across key partner countries. Foundation recognized as trusted policy advisor.</div></div>
+      <div style="background:var(--surface2);border-radius:9px;padding:14px;"><div style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:7px;">Scientific Knowledge Ecosystem</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">All funded outputs discoverable and systematically interlinked. Preprints treated as first-class research objects.</div></div>
+      <div style="background:var(--surface2);border-radius:9px;padding:14px;"><div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:7px;">Policy Implementation &amp; Accountability</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">Streamlined workflows and dashboards tracking implementation. Impact measured by reuse and downstream uptake.</div></div>
+      <div style="background:var(--surface2);border-radius:9px;padding:14px;"><div style="font-size:12px;font-weight:600;color:var(--red);margin-bottom:7px;">Innovation &amp; Systems Modernization</div><div style="font-size:12px;color:var(--muted);line-height:1.6;">Early adopters establish new models for open practices. AI-enabled tools connect preprints, publications, datasets.</div></div>
     </div>
   </div>
 </div>
@@ -330,10 +370,10 @@ body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:700px;hei
 </div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal" id="modal-content"></div>
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-body"></div>
 </div>
-<div class="toast-container" id="toasts"></div>
+<div class="toasts" id="toasts"></div>
 
 <script>
 let data = {
@@ -525,445 +565,520 @@ const investments = [
   {name:'DataCite',type:'Open Data facilitator',decision:'No',loc:'Europe',y2025:0,y2026:150000,y2027:150000,impact:'Small',geo:'Global',status:'closed'},
 ];
 
+let portfolioTab = 'active';
+let _orgChart, _geoChart, _budgetChart, _budgetPieChart;
 
-let currentPortfolioTab = 'active';
-
-// ── NAV ──
-function goTo(page, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  if (el) el.classList.add('active');
-  if (page === 'overview')  renderOverview();
-  if (page === 'talks')     renderTalksList();
-  if (page === 'writing')   renderWritingList();
-  if (page === 'consulting') renderConsultList();
-  if (page === 'budget')    renderBudgetCharts();
-  if (page === 'portfolio') renderPortfolio();
-}
-
-// ── MODAL ──
-function openModal(type, existingId) {
-  const titles = {talks:'Add Talk, Panel or Interview', writing:'Add Writing', consulting:'Add Consultation'};
-  const editTitles = {talks:'Edit Entry', writing:'Edit Writing', consulting:'Edit Consultation'};
-  const existing = existingId ? data[type].find(e => e.id === existingId) : null;
-  const modal = document.getElementById('modal-content');
-  modal.innerHTML = buildModalForm(type, existing ? editTitles[type] : titles[type], existing);
-  if (existing) {
-    modal.querySelector('.btn-primary').setAttribute('onclick', `saveEntry('${type}', ${existingId})`);
-  }
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function closeModal(e) { if (e.target === document.getElementById('modal-overlay')) forceCloseModal(); }
-function forceCloseModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-
-function buildModalForm(type, title, existing) {
-  const today = new Date().toISOString().split('T')[0];
-  const forms = {
-    talks: `<div class="form-grid">
-      <div class="form-group"><label class="form-label">Title / Topic</label><input class="form-input" id="m-title" placeholder="Talk title or topic"></div>
-      <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="m-type">
-        <option>Keynote</option><option>Conference Talk</option><option>Panelist</option><option>Moderator</option>
-        <option>Chair</option><option>Discussant</option><option>Media Interview</option><option>Podcast</option>
-        <option>Webinar</option><option>Quoted / Press</option><option>Peer Reviewer</option><option>Other</option>
-      </select></div>
-      <div class="form-group"><label class="form-label">Event / Venue</label><input class="form-input" id="m-venue" placeholder="Conference or platform"></div>
-      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="m-date" value="${today}"></div>
-      <div class="form-group"><label class="form-label">Audience / Context</label><input class="form-input" id="m-reach" placeholder="e.g. 200 attendees, or co-panelists"></div>
-      <div class="form-group"><label class="form-label">Link / Recording</label><input class="form-input" id="m-link" placeholder="https://..."></div>
-      <div class="form-group form-full"><label class="form-label">Notes</label><textarea class="form-textarea" id="m-notes" placeholder="Key themes, outcomes, follow-ups..."></textarea></div>
-    </div>`,
-    writing: `<div class="form-grid">
-      <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="m-title" placeholder="Article or report title"></div>
-      <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="m-type">
-        <option>Research Report</option><option>Article</option><option>Op-Ed</option>
-        <option>Blog Post</option><option>Policy Brief</option><option>Other</option>
-      </select></div>
-      <div class="form-group"><label class="form-label">Publication / Platform</label><input class="form-input" id="m-venue" placeholder="Where published?"></div>
-      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="m-date" value="${today}"></div>
-      <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="m-reach"><option>Published</option><option>In Review</option><option>Draft</option></select></div>
-      <div class="form-group"><label class="form-label">Link</label><input class="form-input" id="m-link" placeholder="https://..."></div>
-      <div class="form-group form-full"><label class="form-label">Notes</label><textarea class="form-textarea" id="m-notes" placeholder="Abstract or key findings..."></textarea></div>
-    </div>`,
-    consulting: `<div class="form-grid">
-      <div class="form-group"><label class="form-label">Topic / Request</label><input class="form-input" id="m-title" placeholder="What were you consulted on?"></div>
-      <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="m-type"><option>Internal</option><option>External</option></select></div>
-      <div class="form-group"><label class="form-label">Requesting Team / Org</label><input class="form-input" id="m-venue" placeholder="Who requested it?"></div>
-      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="m-date" value="${today}"></div>
-      <div class="form-group"><label class="form-label">Duration (hours)</label><input class="form-input" type="number" id="m-reach" placeholder="e.g. 2" step="0.5"></div>
-      <div class="form-group"><label class="form-label">Follow-up / Outcome</label><input class="form-input" id="m-link" placeholder="Action items or decision"></div>
-      <div class="form-group form-full"><label class="form-label">Notes</label><textarea class="form-textarea" id="m-notes" placeholder="Context, recommendations, key takeaways..."></textarea></div>
-    </div>`
-  };
-  const html = `
-    <div class="modal-header">
-      <div class="modal-title">${title}</div>
-      <button class="modal-close" onclick="forceCloseModal()">✕</button>
-    </div>
-    ${forms[type]}
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="saveEntry('${type}')">Save Entry</button>
-      <button class="btn btn-ghost" onclick="forceCloseModal()">Cancel</button>
-    </div>`;
-  if (existing) {
-    setTimeout(() => {
-      if (document.getElementById('m-title'))  document.getElementById('m-title').value  = existing.title  || '';
-      if (document.getElementById('m-type'))   document.getElementById('m-type').value   = existing.type   || '';
-      if (document.getElementById('m-venue'))  document.getElementById('m-venue').value  = existing.venue  || '';
-      if (document.getElementById('m-date'))   document.getElementById('m-date').value   = existing.date   || '';
-      if (document.getElementById('m-reach'))  document.getElementById('m-reach').value  = existing.reach  || '';
-      if (document.getElementById('m-link'))   document.getElementById('m-link').value   = existing.link   || '';
-      if (document.getElementById('m-notes'))  document.getElementById('m-notes').value  = existing.notes  || '';
-    }, 30);
-  }
-  return html;
-}
-
-function saveEntry(type, editId) {
-  const title = document.getElementById('m-title')?.value;
-  const eType = document.getElementById('m-type')?.value;
-  const venue = document.getElementById('m-venue')?.value;
-  const date  = document.getElementById('m-date')?.value;
-  const reach = document.getElementById('m-reach')?.value;
-  const link  = document.getElementById('m-link')?.value;
-  const notes = document.getElementById('m-notes')?.value;
-  if (!title || !date) { toast('⚠️ Please fill in title and date.'); return; }
-  if (editId) {
-    const idx = data[type].findIndex(e => e.id === editId);
-    if (idx !== -1) data[type][idx] = {...data[type][idx], title, type: eType, venue, date, reach, link, notes};
-    toast('✅ Entry updated!');
-  } else {
-    data[type].push({id: Date.now(), title, type: eType, venue, date, reach, link, notes});
-    toast('✅ Entry saved!');
-  }
-  forceCloseModal();
-  goTo(type, document.querySelector(`.nav-item[onclick="goTo('${type}',this)"]`));
-  updateOverviewStats();
-}
-
-function deleteEntry(type, id) {
-  data[type] = data[type].filter(e => e.id !== id);
-  renderTalksList(); renderWritingList(); renderConsultList();
-  updateOverviewStats();
-  toast('🗑 Entry removed.');
-}
-
-// ── ICONS / COLOURS ──
-const typeIconMap = {
-  'Keynote':'🎯','Conference Talk':'🎤','Media Interview':'📺','Podcast':'🎧','Webinar':'💻',
-  'Quoted / Press':'💬','Peer Reviewer':'🔍','Contributor':'🖊️',
-  'Panelist':'🪑','Moderator':'🎙️','Chair':'👑','Discussant':'💬',
+// ─── ICONS / COLOURS ───────────────────────────────────────────────
+const ICONS = {
+  'Keynote':'🎯','Conference Talk':'🎤','Panelist':'🪑','Moderator':'🎙️','Chair':'👑','Discussant':'💬',
+  'Media Interview':'📺','Podcast':'🎧','Webinar':'💻','Quoted / Press':'💬','Peer Reviewer':'🔍','Contributor':'🖊️',
   'Research Report':'📄','Article':'📰','Op-Ed':'✍️','Blog Post':'📝','Policy Brief':'📋',
   'Internal':'🏛️','External':'🌐'
 };
-const typeBgMap = {
-  'Keynote':'rgba(200,169,110,0.15)','Conference Talk':'rgba(200,169,110,0.1)',
-  'Media Interview':'rgba(91,191,223,0.15)','Podcast':'rgba(91,191,223,0.1)',
-  'Webinar':'rgba(124,111,255,0.12)',
-  'Quoted / Press':'rgba(78,207,164,0.12)','Peer Reviewer':'rgba(91,191,223,0.1)','Contributor':'rgba(200,169,110,0.1)',
-  'Panelist':'rgba(124,111,255,0.15)','Moderator':'rgba(78,207,164,0.12)',
-  'Chair':'rgba(200,169,110,0.12)','Discussant':'rgba(91,191,223,0.1)',
-  'Research Report':'rgba(78,207,164,0.12)','Article':'rgba(78,207,164,0.1)',
-  'Op-Ed':'rgba(200,169,110,0.12)','Blog Post':'rgba(91,191,223,0.12)',
-  'Policy Brief':'rgba(124,111,255,0.12)',
-  'Internal':'rgba(91,191,223,0.15)','External':'rgba(78,207,164,0.12)'
+const BGCOL = {
+  'Keynote':'rgba(200,169,110,.15)','Conference Talk':'rgba(200,169,110,.1)','Panelist':'rgba(124,111,255,.15)',
+  'Moderator':'rgba(78,207,164,.12)','Chair':'rgba(200,169,110,.12)','Discussant':'rgba(91,191,223,.1)',
+  'Media Interview':'rgba(91,191,223,.15)','Podcast':'rgba(91,191,223,.1)','Webinar':'rgba(124,111,255,.12)',
+  'Quoted / Press':'rgba(78,207,164,.12)','Peer Reviewer':'rgba(91,191,223,.1)','Contributor':'rgba(200,169,110,.1)',
+  'Research Report':'rgba(78,207,164,.12)','Article':'rgba(78,207,164,.1)','Op-Ed':'rgba(200,169,110,.12)',
+  'Blog Post':'rgba(91,191,223,.12)','Policy Brief':'rgba(124,111,255,.12)',
+  'Internal':'rgba(91,191,223,.15)','External':'rgba(78,207,164,.12)'
 };
 
-// ── RENDER LOG LIST ──
+// ─── HELPERS ───────────────────────────────────────────────────────
 function fmtDate(d) {
   if (!d) return '';
-  return new Date(d + 'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  try { return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+  catch(e){ return d; }
 }
 function fmtMoney(n) {
   if (!n) return '—';
-  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
-  if (n >= 1000) return '$' + (n/1000).toFixed(0) + 'K';
-  return '$' + n;
+  if (n>=1000000) return '$'+(n/1000000).toFixed(1)+'M';
+  if (n>=1000) return '$'+(n/1000).toFixed(0)+'K';
+  return '$'+n;
+}
+function toast(msg) {
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div'); t.className='toast'; t.textContent=msg; c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},2600);
 }
 
-function renderLogList(container, items, type) {
-  if (!items.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No entries found.</div>';
-    return;
-  }
-  container.innerHTML = items.map(e => `
+// ─── NAVIGATION ────────────────────────────────────────────────────
+function nav(page, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(el) el.classList.add('active');
+  if(page==='talks')     { renderTalks(); }
+  if(page==='writing')   { renderWriting(); }
+  if(page==='consulting'){ renderConsult(); }
+  if(page==='budget')    { renderBudget(); }
+  if(page==='portfolio') { renderPortfolio(); }
+  if(page==='overview')  { drawOverviewCharts(); }
+}
+
+// ─── OVERVIEW ──────────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('ov-talks').textContent   = data.talks.length;
+  document.getElementById('ov-writing').textContent = data.writing.length;
+  document.getElementById('ov-consult').textContent = data.consulting.length;
+}
+
+function drawOverviewCharts() {
+  updateStats();
+
+  // Recent entries
+  const all = [
+    ...data.talks.map(e=>({...e,_cat:'talks'})),
+    ...data.writing.map(e=>({...e,_cat:'writing'})),
+    ...data.consulting.map(e=>({...e,_cat:'consulting'}))
+  ].filter(e=>e&&e.date).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
+
+  const rl = document.getElementById('recent-list');
+  rl.innerHTML = all.length ? all.map(e=>`
     <div class="log-item">
-      <div class="log-icon" style="background:${typeBgMap[e.type]||'rgba(255,255,255,0.06)'}">${typeIconMap[e.type]||'📌'}</div>
+      <div class="log-icon" style="background:${BGCOL[e.type]||'rgba(255,255,255,.06)'}">${ICONS[e.type]||'📌'}</div>
+      <div class="log-meta"><div class="log-title">${e.title}</div><div class="log-detail">${e.venue||'—'}</div></div>
+      <div class="log-right"><div class="log-date">${fmtDate(e.date)}</div></div>
+    </div>`).join('') : '<div class="empty"><div class="empty-icon">📋</div>No entries yet.</div>';
+
+  // Goal budget bars
+  const goals=[
+    {l:'Foundation Leadership',p:18,c:'#c8a96e',v:'$1.8M'},
+    {l:'Equity & Inclusion',p:29,c:'#7c6fff',v:'$2.9M'},
+    {l:'Policy Implementation',p:10,c:'#4ecfa4',v:'$1.0M'},
+    {l:'Innovate & Challenge',p:14,c:'#e06b7d',v:'$1.4M'},
+    {l:'APC Wind-Down',p:5,c:'#5bbfdf',v:'$0.5M'},
+  ];
+  document.getElementById('goal-list').innerHTML = goals.map(g=>`
+    <div style="margin-bottom:11px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+        <span>${g.l}</span><span style="color:${g.c};font-weight:600">${g.v}</span>
+      </div>
+      <div class="pbar"><div class="pfill" style="width:${g.p}%;background:${g.c};"></div></div>
+    </div>`).join('');
+
+  // ── SVG bar chart (no canvas needed) ──
+  const now = new Date();
+  const months=[];
+  for(let i=11;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    months.push({
+      label:d.toLocaleString('default',{month:'short'}),
+      key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+    });
+  }
+  const allAct=[...data.talks,...data.writing,...data.consulting].filter(e=>e&&e.date);
+  const vals=months.map(m=>allAct.filter(e=>e.date.startsWith(m.key)).length);
+  const maxV=Math.max(...vals,1);
+  const W=520,H=190,pl=28,pr=8,pt=10,pb=28;
+  const bw=Math.floor((W-pl-pr)/12)-3;
+  const ch=H-pt-pb;
+  let svgBars='', svgGrid='';
+  for(let g=0;g<=maxV;g++){
+    const gy=pt+ch-Math.round((g/maxV)*ch);
+    svgGrid+=`<line x1="${pl}" x2="${W-pr}" y1="${gy}" y2="${gy}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
+    svgGrid+=`<text x="${pl-3}" y="${gy+3}" text-anchor="end" font-size="9" fill="#8886a0">${g}</text>`;
+  }
+  months.forEach((m,i)=>{
+    const v=vals[i];
+    const x=pl+i*((W-pl-pr)/12)+1;
+    const bh=v===0?2:Math.max(3,Math.round((v/maxV)*ch));
+    const y=pt+ch-bh;
+    svgBars+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="2" fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.75)" stroke-width="1"/>`;
+    if(v>0) svgBars+=`<text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-size="9" fill="#c8a96e">${v}</text>`;
+    svgBars+=`<text x="${x+bw/2}" y="${H-4}" text-anchor="middle" font-size="9" fill="#8886a0">${m.label}</text>`;
+  });
+  document.getElementById('bar-overview').innerHTML=
+    `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">${svgGrid}${svgBars}</svg>`;
+
+  // ── SVG donut chart ──
+  const counts=[data.talks.length,data.writing.length,data.consulting.length];
+  const labels=['Talks, Panels & Interviews','Writing','Consultations'];
+  const colors=['#c8a96e','#4ecfa4','#5bbfdf'];
+  const tot=counts.reduce((a,b)=>a+b,0)||1;
+  const cx=85,cy=85,R=68,ir=46;
+  let ang=-Math.PI/2, paths='';
+  counts.forEach((v,i)=>{
+    const slice=(v/tot)*2*Math.PI;
+    const end=ang+slice;
+    const x1=cx+R*Math.cos(ang),y1=cy+R*Math.sin(ang);
+    const x2=cx+R*Math.cos(end),y2=cy+R*Math.sin(end);
+    const ix1=cx+ir*Math.cos(ang),iy1=cy+ir*Math.sin(ang);
+    const ix2=cx+ir*Math.cos(end),iy2=cy+ir*Math.sin(end);
+    const lg=slice>Math.PI?1:0;
+    paths+=`<path d="M${ix1},${iy1}L${x1},${y1}A${R},${R} 0 ${lg},1 ${x2},${y2}L${ix2},${iy2}A${ir},${ir} 0 ${lg},0 ${ix1},${iy1}Z" fill="${colors[i]}" opacity="0.85"/>`;
+    ang=end;
+  });
+  paths+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" font-size="20" font-weight="700" fill="#f0eff5">${tot}</text>`;
+  paths+=`<text x="${cx}" y="${cy+11}" text-anchor="middle" font-size="10" fill="#8886a0">TOTAL</text>`;
+  let leg='';
+  labels.forEach((l,i)=>{
+    const ly=185+i*17;
+    leg+=`<rect x="5" y="${ly-9}" width="9" height="9" rx="2" fill="${colors[i]}" opacity="0.85"/>`;
+    leg+=`<text x="19" y="${ly}" font-size="10" fill="#8886a0">${l}: <tspan fill="#f0eff5" font-weight="500">${counts[i]}</tspan></text>`;
+  });
+  document.getElementById('donut-overview').innerHTML=
+    `<svg viewBox="0 0 195 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:195px;height:auto">${paths}${leg}</svg>`;
+}
+
+// ─── LOG LIST RENDERER ─────────────────────────────────────────────
+function renderLogList(containerId, items, type) {
+  const c=document.getElementById(containerId);
+  if(!items.length){c.innerHTML='<div class="empty"><div class="empty-icon">📋</div>No entries found.</div>';return;}
+  c.innerHTML=items.map(e=>`
+    <div class="log-item">
+      <div class="log-icon" style="background:${BGCOL[e.type]||'rgba(255,255,255,.06)'}">${ICONS[e.type]||'📌'}</div>
       <div class="log-meta">
         <div class="log-title">${e.title}</div>
-        <div class="log-detail">${e.venue||'—'} · <span class="badge badge-gray" style="padding:2px 7px">${e.type}</span></div>
-        ${e.notes ? `<div class="log-detail" style="margin-top:4px;font-style:italic;opacity:0.7">${e.notes.substring(0,80)}${e.notes.length>80?'...':''}</div>` : ''}
+        <div class="log-detail">${e.venue||'—'} · <span class="b b-gray" style="padding:1px 6px">${e.type}</span></div>
+        ${e.notes?`<div class="log-note">${e.notes.substring(0,90)}${e.notes.length>90?'...':''}</div>`:''}
       </div>
       <div class="log-right">
         <div class="log-date">${fmtDate(e.date)}</div>
-        <div class="log-reach">${e.reach ? (type==='consulting' ? e.reach+'h' : (type==='writing' ? e.reach : e.reach)) : ''}</div>
-        <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-end;">
-          <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="openModal('${type}',${e.id})">✏️ Edit</button>
-          <button class="btn btn-danger" style="padding:4px 10px;font-size:11px;" onclick="deleteEntry('${type}',${e.id})">Delete</button>
+        <div class="log-actions">
+          <button class="btn btn-g" style="padding:3px 9px;font-size:11px;" onclick="openEdit('${type}',${e.id})">✏️ Edit</button>
+          <button class="btn btn-d" style="padding:3px 9px;font-size:11px;" onclick="del('${type}',${e.id})">Delete</button>
         </div>
       </div>
     </div>`).join('');
 }
 
-function filterItems(items, searchId, ...filterIds) {
-  const q = document.getElementById(searchId)?.value.toLowerCase() || '';
-  let filtered = items;
-  if (q) filtered = filtered.filter(e => JSON.stringify(e).toLowerCase().includes(q));
-  filterIds.forEach(fid => {
-    const val = document.getElementById(fid)?.value;
-    if (val) filtered = filtered.filter(e => Object.values(e).some(v => String(v) === val));
+function applyFilters(items, searchId, ...selIds) {
+  const q=(document.getElementById(searchId)?.value||'').toLowerCase();
+  let r=items.filter(e=>e!=null);
+  if(q) r=r.filter(e=>JSON.stringify(e).toLowerCase().includes(q));
+  selIds.forEach(sid=>{
+    const v=document.getElementById(sid)?.value||'';
+    if(!v) return;
+    if(sid.includes('yr')||sid.includes('year')) r=r.filter(e=>e.date?.startsWith(v));
+    else r=r.filter(e=>Object.values(e).some(x=>String(x)===v));
   });
-  return filtered;
+  return r;
 }
 
-function renderTalksList() {
-  const items = filterItems(data.talks, 'search-talks', 'filter-talks-type', 'filter-talks-year');
-  renderLogList(document.getElementById('talks-list'), items, 'talks');
-  const yr = new Date().getFullYear().toString();
-  document.getElementById('stat-talks-total').textContent = data.talks.length;
-  document.getElementById('stat-talks-year').textContent = data.talks.filter(e=>e.date?.startsWith(yr)).length;
-  document.getElementById('stat-talks-keynote').textContent = data.talks.filter(e=>['Keynote','Conference Talk','Webinar'].includes(e.type)).length;
-  document.getElementById('stat-talks-panels').textContent = data.talks.filter(e=>['Panelist','Moderator','Chair','Discussant'].includes(e.type)).length;
-  document.getElementById('stat-talks-interview').textContent = data.talks.filter(e=>['Media Interview','Podcast','Quoted / Press'].includes(e.type)).length;
+function renderTalks() {
+  const items=applyFilters(data.talks,'s-talks','f-talks-type','f-talks-yr');
+  renderLogList('talks-list',items,'talks');
+  const yr=String(new Date().getFullYear());
+  document.getElementById('st-talks-total').textContent=data.talks.length;
+  document.getElementById('st-talks-yr').textContent=data.talks.filter(e=>e.date?.startsWith(yr)).length;
+  document.getElementById('st-talks-kt').textContent=data.talks.filter(e=>['Keynote','Conference Talk','Webinar'].includes(e.type)).length;
+  document.getElementById('st-talks-p').textContent=data.talks.filter(e=>['Panelist','Moderator','Chair','Discussant'].includes(e.type)).length;
+  document.getElementById('st-talks-i').textContent=data.talks.filter(e=>['Media Interview','Podcast','Quoted / Press'].includes(e.type)).length;
+}
+function renderWriting() {
+  let items=applyFilters(data.writing,'s-writing','f-wr-type');
+  const st=document.getElementById('f-wr-status')?.value;
+  if(st) items=items.filter(e=>e.reach===st);
+  renderLogList('writing-list',items,'writing');
+  document.getElementById('st-wr-total').textContent=data.writing.length;
+  document.getElementById('st-wr-rep').textContent=data.writing.filter(e=>e.type==='Research Report').length;
+  document.getElementById('st-wr-art').textContent=data.writing.filter(e=>['Article','Op-Ed'].includes(e.type)).length;
+  document.getElementById('st-wr-blog').textContent=data.writing.filter(e=>e.type==='Blog Post').length;
+}
+function renderConsult() {
+  const items=applyFilters(data.consulting,'s-consult','f-co-type');
+  renderLogList('consult-list',items,'consulting');
+  const now=new Date();
+  const mon=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('st-co-total').textContent=data.consulting.length;
+  document.getElementById('st-co-int').textContent=data.consulting.filter(e=>e.type==='Internal').length;
+  document.getElementById('st-co-ext').textContent=data.consulting.filter(e=>e.type==='External').length;
+  document.getElementById('st-co-mon').textContent=data.consulting.filter(e=>e.date?.startsWith(mon)).length;
 }
 
-function renderWritingList() {
-  const items = filterItems(data.writing, 'search-writing', 'filter-writing-type');
-  const st = document.getElementById('filter-writing-status')?.value;
-  const filtered = st ? items.filter(e=>e.reach===st) : items;
-  renderLogList(document.getElementById('writing-list'), filtered, 'writing');
-  document.getElementById('stat-writing-total').textContent = data.writing.length;
-  document.getElementById('stat-writing-reports').textContent = data.writing.filter(e=>e.type==='Research Report').length;
-  document.getElementById('stat-writing-articles').textContent = data.writing.filter(e=>['Article','Op-Ed'].includes(e.type)).length;
-  document.getElementById('stat-writing-blogs').textContent = data.writing.filter(e=>e.type==='Blog Post').length;
-}
-
-function renderConsultList() {
-  const items = filterItems(data.consulting, 'search-consult', 'filter-consult-type');
-  renderLogList(document.getElementById('consult-list'), items, 'consulting');
-  const now = new Date(); const mon = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  document.getElementById('stat-consult-total').textContent = data.consulting.length;
-  document.getElementById('stat-consult-internal').textContent = data.consulting.filter(e=>e.type==='Internal').length;
-  document.getElementById('stat-consult-external').textContent = data.consulting.filter(e=>e.type==='External').length;
-  document.getElementById('stat-consult-month').textContent = data.consulting.filter(e=>e.date?.startsWith(mon)).length;
-}
-
-// ── OVERVIEW ──
-function updateOverviewStats() {
-  document.getElementById('ov-talks').textContent = data.talks.length;
-  document.getElementById('ov-writing').textContent = data.writing.length;
-  document.getElementById('ov-consult').textContent = data.consulting.length;
-}
-
-let activityChart, typesChart;
-function renderOverview() {
-  updateOverviewStats();
-  const allEntries = [
-    ...data.talks.map(e=>({...e,cat:'talks'})),
-    ...data.writing.map(e=>({...e,cat:'writing'})),
-    ...data.consulting.map(e=>({...e,cat:'consulting'}))
-  ].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
-
-  const rl = document.getElementById('recent-impact-list');
-  rl.innerHTML = allEntries.length ? allEntries.map(e=>`
-    <div class="log-item">
-      <div class="log-icon" style="background:${typeBgMap[e.type]||'rgba(255,255,255,0.06)'}">${typeIconMap[e.type]||'📌'}</div>
-      <div class="log-meta"><div class="log-title">${e.title}</div><div class="log-detail">${e.venue||'—'}</div></div>
-      <div class="log-right"><div class="log-date">${fmtDate(e.date)}</div></div>
-    </div>`).join('') : '<div class="empty-state"><div class="empty-icon">📋</div>No entries yet.</div>';
-
-  const goals = [
-    {label:'Foundation Leadership',pct:18,color:'var(--accent)',val:'$1.8M'},
-    {label:'Equity & Inclusion',pct:29,color:'var(--accent2)',val:'$2.9M'},
-    {label:'Policy Implementation',pct:10,color:'var(--accent3)',val:'$1.0M'},
-    {label:'Innovate & Challenge',pct:14,color:'var(--accent4)',val:'$1.4M'},
-    {label:'APC Wind-Down',pct:5,color:'var(--accent5)',val:'$0.5M'},
-  ];
-  document.getElementById('goal-budget-list').innerHTML = goals.map(g=>`
-    <div style="margin-bottom:12px;">
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-        <span style="color:var(--text)">${g.label}</span><span style="color:${g.color};font-weight:600">${g.val}</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${g.pct}%;background:${g.color};"></div></div>
-    </div>`).join('');
-
-  const now = new Date();
-  const months = [];
-  for (let i=11;i>=0;i--) {
-    const d = new Date(now.getFullYear(),now.getMonth()-i,1);
-    months.push({label:d.toLocaleString('default',{month:'short'}),key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`});
-  }
-  const allAct = [...data.talks,...data.writing,...data.consulting];
-  const chartData = months.map(m=>allAct.filter(e=>e.date?.startsWith(m.key)).length);
-
-  if (activityChart) activityChart.destroy();
-  activityChart = new Chart(document.getElementById('chart-activity').getContext('2d'), {
+// ─── BUDGET / PORTFOLIO (Chart.js) ─────────────────────────────────
+function renderBudget() {
+  if(_budgetChart) _budgetChart.destroy();
+  if(_budgetPieChart) _budgetPieChart.destroy();
+  _budgetChart=new Chart(document.getElementById('chart-budget').getContext('2d'),{
     type:'bar',
-    data:{labels:months.map(m=>m.label),datasets:[{label:'Activities',data:chartData,backgroundColor:'rgba(200,169,110,0.25)',borderColor:'rgba(200,169,110,0.7)',borderWidth:1.5,borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8886a0',font:{size:11}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8886a0',font:{size:11},stepSize:1}}}}
+    data:{labels:[2022,2023,2024,2025,2026,2027,2028,2029],datasets:[
+      {label:'Projects ($M)',data:[0.2,3.575,4.275,5.325,7.025,4.45,2.15,0.1],backgroundColor:'rgba(124,111,255,.6)',borderRadius:4},
+      {label:'APC ($M)',data:[6.3,5.52,5.86,3.01,0.5,0.25,0.1,0.05],backgroundColor:'rgba(224,107,125,.5)',borderRadius:4},
+      {label:'Misc ($M)',data:[1.2,1.2,1.2,1.2,1.5,1.5,1.5,1.5],backgroundColor:'rgba(91,191,223,.4)',borderRadius:4},
+      {label:'Budget Cap',data:[10,10,10,10,10,10,10,10],type:'line',borderColor:'rgba(200,169,110,.6)',backgroundColor:'transparent',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#c8a96e'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8886a0',font:{size:11},padding:9,boxWidth:11}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8886a0'}},y:{stacked:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8886a0',callback:v=>'$'+v+'M'}}}}
   });
-
-  if (typesChart) typesChart.destroy();
-  const typeCounts = [data.talks.length,data.writing.length,data.consulting.length];
-  typesChart = new Chart(document.getElementById('chart-types').getContext('2d'), {
+  _budgetPieChart=new Chart(document.getElementById('chart-budget-pie').getContext('2d'),{
     type:'doughnut',
-    data:{labels:['Talks, Panels & Interviews','Writing','Consultations'],datasets:[{data:typeCounts.every(v=>v===0)?[1,1,1]:typeCounts,backgroundColor:['rgba(200,169,110,0.7)','rgba(78,207,164,0.7)','rgba(91,191,223,0.7)'],borderColor:'var(--surface)',borderWidth:3,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8886a0',font:{size:11},padding:12,boxWidth:12}}},cutout:'62%'}
-  });
-}
-
-// ── BUDGET ──
-let budgetChart, budgetPieChart;
-function renderBudgetCharts() {
-  if (budgetChart) budgetChart.destroy();
-  budgetChart = new Chart(document.getElementById('chart-budget').getContext('2d'), {
-    type:'bar',
-    data:{
-      labels:[2022,2023,2024,2025,2026,2027,2028,2029],
-      datasets:[
-        {label:'Project Investments ($M)',data:[0.2,3.575,4.275,5.325,7.025,4.45,2.15,0.1],backgroundColor:'rgba(124,111,255,0.6)',borderRadius:4},
-        {label:'APC Payments ($M)',data:[6.3,5.52,5.86,3.01,0.5,0.25,0.1,0.05],backgroundColor:'rgba(224,107,125,0.5)',borderRadius:4},
-        {label:'Misc / Other ($M)',data:[1.2,1.2,1.2,1.2,1.5,1.5,1.5,1.5],backgroundColor:'rgba(91,191,223,0.4)',borderRadius:4},
-        {label:'Budget Cap ($M)',data:[10,10,10,10,10,10,10,10],type:'line',borderColor:'rgba(200,169,110,0.6)',backgroundColor:'transparent',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'var(--accent)'}
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8886a0',font:{size:11},padding:10,boxWidth:12}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8886a0'}},y:{stacked:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8886a0',callback:v=>'$'+v+'M'}}}}
-  });
-
-  if (budgetPieChart) budgetPieChart.destroy();
-  budgetPieChart = new Chart(document.getElementById('chart-budget-pie').getContext('2d'), {
-    type:'doughnut',
-    data:{labels:['Project Investments','APC','Misc/Other','Available'],datasets:[{data:[7.025,0.5,1.5,0.975],backgroundColor:['rgba(124,111,255,0.7)','rgba(224,107,125,0.6)','rgba(91,191,223,0.6)','rgba(78,207,164,0.5)'],borderColor:'var(--surface)',borderWidth:3,hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#8886a0',font:{size:11},padding:10,boxWidth:12}},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: $${ctx.raw}M`}}}}
+    data:{labels:['Projects','APC','Misc','Available'],datasets:[{data:[7.025,0.5,1.5,0.975],backgroundColor:['rgba(124,111,255,.7)','rgba(224,107,125,.6)','rgba(91,191,223,.6)','rgba(78,207,164,.5)'],borderColor:'#17171f',borderWidth:3,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#8886a0',font:{size:11},padding:9,boxWidth:11}},tooltip:{callbacks:{label:c=>` ${c.label}: $${c.raw}M`}}}}
   });
   renderInvTable();
 }
 
+// ─── INVESTMENT TABLE (editable + reorderable) ───────────────────────
+const STATUS_OPTS = ['Yes','Yes - in progress','Yes - likely to renew','Probable','Under Consideration','Closed','No'];
+const IMPACT_OPTS = ['Large','Medium','Small',''];
+const STATUS_BADGE = {'Yes':'b-green','Yes - in progress':'b-blue','Yes - likely to renew':'b-purple','Probable':'b-gold','Under Consideration':'b-gray','Closed':'b-gray','No':'b-red'};
+
 function renderInvTable() {
-  const q = document.getElementById('search-inv')?.value.toLowerCase()||'';
-  const st = document.getElementById('filter-inv-status')?.value||'';
-  const geo = document.getElementById('filter-inv-geo')?.value||'';
-  const statusColors = {'Yes':'badge-green','Yes - in progress':'badge-blue','Yes - likely to renew':'badge-purple','Probable':'badge-gold','Under Consideration':'badge-gray','Closed':'badge-gray','No':'badge-red'};
-  const impactColor = {'Large':'badge-gold','Medium':'badge-purple','Small':'badge-blue','':'badge-gray'};
-  const rows = investments.filter(inv=>{
-    if (q && !JSON.stringify(inv).toLowerCase().includes(q)) return false;
-    if (st && inv.decision!==st) return false;
-    if (geo && inv.loc!==geo) return false;
-    return true;
-  });
-  document.getElementById('inv-tbody').innerHTML = rows.map(inv=>`
-    <tr>
-      <td style="font-weight:500;max-width:180px">${inv.name}</td>
-      <td style="color:var(--muted);font-size:12px">${inv.type}</td>
-      <td><span class="badge ${statusColors[inv.decision]||'badge-gray'}">${inv.decision}</span></td>
-      <td style="color:var(--muted)">${inv.loc}</td>
-      <td style="color:var(--accent)">${inv.y2025?fmtMoney(inv.y2025):'—'}</td>
-      <td style="color:var(--accent)">${inv.y2026?fmtMoney(inv.y2026):'—'}</td>
-      <td style="color:var(--accent)">${inv.y2027?fmtMoney(inv.y2027):'—'}</td>
-      <td>${inv.impact?`<span class="badge ${impactColor[inv.impact]||'badge-gray'}">${inv.impact}</span>`:'—'}</td>
-      <td style="font-size:12px;color:var(--muted)">${inv.geo||'—'}</td>
-    </tr>`).join('');
+  const q=(document.getElementById('s-inv')?.value||'').toLowerCase();
+  const st=document.getElementById('f-inv-status')?.value||'';
+  const geo=document.getElementById('f-inv-geo')?.value||'';
+
+  // Build filtered index list (we operate on investments array by index)
+  const indices = investments.reduce((acc,inv,i)=>{
+    if(q && !JSON.stringify(inv).toLowerCase().includes(q)) return acc;
+    if(st && inv.decision!==st) return acc;
+    if(geo && inv.loc!==geo) return acc;
+    acc.push(i);
+    return acc;
+  },[]);
+
+  const tbody = document.getElementById('inv-tbody');
+  tbody.innerHTML = indices.map((idx,pos) => {
+    const inv = investments[idx];
+    const isFirst = pos===0;
+    const isLast  = pos===indices.length-1;
+    return `<tr data-idx="${idx}">
+      <td><span contenteditable="true" class="ec" onblur="saveCell(${idx},'name',this.textContent.trim())" style="font-weight:500;display:block;min-width:140px">${inv.name}</span></td>
+      <td><span contenteditable="true" class="ec" onblur="saveCell(${idx},'type',this.textContent.trim())" style="font-size:12px;color:var(--muted);display:block;min-width:110px">${inv.type}</span></td>
+      <td>
+        <select class="ec-sel" onchange="saveCell(${idx},'decision',this.value);renderInvTable()">
+          ${STATUS_OPTS.map(o=>`<option${inv.decision===o?' selected':''}>${o}</option>`).join('')}
+        </select>
+      </td>
+      <td><span contenteditable="true" class="ec" onblur="saveCell(${idx},'loc',this.textContent.trim())" style="color:var(--muted);display:block;min-width:60px">${inv.loc}</span></td>
+      <td><span contenteditable="true" class="ec ec-num" onblur="saveCell(${idx},'y2025',parseNum(this.textContent))" style="color:var(--gold);display:block">${inv.y2025||0}</span></td>
+      <td><span contenteditable="true" class="ec ec-num" onblur="saveCell(${idx},'y2026',parseNum(this.textContent))" style="color:var(--gold);display:block">${inv.y2026||0}</span></td>
+      <td><span contenteditable="true" class="ec ec-num" onblur="saveCell(${idx},'y2027',parseNum(this.textContent))" style="color:var(--gold);display:block">${inv.y2027||0}</span></td>
+      <td>
+        <select class="ec-sel" onchange="saveCell(${idx},'impact',this.value)">
+          ${IMPACT_OPTS.map(o=>`<option${inv.impact===o?' selected':''}>${o}</option>`).join('')}
+        </select>
+      </td>
+      <td><span contenteditable="true" class="ec" onblur="saveCell(${idx},'geo',this.textContent.trim())" style="font-size:12px;color:var(--muted);display:block;min-width:80px">${inv.geo||''}</span></td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <button class="mv-btn" onclick="moveInv(${idx},-1)" ${isFirst?'disabled':''} title="Move up">▲</button>
+          <button class="mv-btn" onclick="moveInv(${idx},1)"  ${isLast?'disabled':''}  title="Move down">▼</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
-// ── PORTFOLIO ──
-let orgChart, geoChart;
-function setPortfolioTab(tab, el) {
-  currentPortfolioTab = tab;
-  document.querySelectorAll('.pill-tab').forEach(t=>t.classList.remove('active'));
+function saveCell(idx, field, value) {
+  investments[idx][field] = value;
+}
+function parseNum(s) {
+  const n = parseFloat(String(s).replace(/[^0-9.]/g,''));
+  return isNaN(n) ? 0 : n;
+}
+function moveInv(idx, dir) {
+  const target = idx + dir;
+  if(target < 0 || target >= investments.length) return;
+  const tmp = investments[idx];
+  investments[idx] = investments[target];
+  investments[target] = tmp;
+  renderInvTable();
+}
+
+function setTab(tab,el){
+  portfolioTab=tab;
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   renderPortfolio();
 }
-function renderPortfolio() {
-  const filtered = investments.filter(i=>i.status===currentPortfolioTab);
-  const list = document.getElementById('portfolio-list');
-  list.innerHTML = filtered.length ? `<table class="data-table"><thead><tr><th>Partner</th><th>Organization Type</th><th>Location</th><th>2026 Investment</th><th>Status</th><th>Geo Impact</th></tr></thead><tbody>${filtered.map(inv=>`<tr><td style="font-weight:500">${inv.name}</td><td style="color:var(--muted);font-size:12px">${inv.type}</td><td>${inv.loc}</td><td style="color:var(--accent);font-weight:500">${fmtMoney(inv.y2026)||'—'}</td><td><span class="badge badge-${inv.status==='active'?'green':inv.status==='pipeline'?'gold':'gray'}">${inv.decision}</span></td><td style="font-size:12px;color:var(--muted)">${inv.geo||'—'}</td></tr>`).join('')}</tbody></table>` : '<div class="empty-state"><div class="empty-icon">🌐</div>No partners in this category.</div>';
+function renderPortfolio(){
+  const filtered=investments.filter(i=>i.status===portfolioTab);
+  document.getElementById('portfolio-list').innerHTML=filtered.length?
+    `<table class="tbl"><thead><tr><th>Partner</th><th>Org Type</th><th>Location</th><th>2026 Investment</th><th>Status</th><th>Geo Reach</th></tr></thead><tbody>${
+      filtered.map(inv=>`<tr><td style="font-weight:500">${inv.name}</td><td style="color:var(--muted);font-size:12px">${inv.type}</td><td>${inv.loc}</td><td style="color:var(--gold);font-weight:500">${fmtMoney(inv.y2026)||'—'}</td><td><span class="b b-${inv.status==='active'?'green':inv.status==='pipeline'?'gold':'gray'}">${inv.decision}</span></td><td style="font-size:12px;color:var(--muted)">${inv.geo||'—'}</td></tr>`).join('')
+    }</tbody></table>`:
+    '<div class="empty"><div class="empty-icon">🌐</div>No partners here.</div>';
 
-  const orgCounts = {};
-  investments.filter(i=>i.status==='active').forEach(i=>{orgCounts[i.type]=(orgCounts[i.type]||0)+1;});
-  if (orgChart) orgChart.destroy();
-  orgChart = new Chart(document.getElementById('chart-org-type').getContext('2d'), {
+  if(_orgChart) _orgChart.destroy();
+  if(_geoChart) _geoChart.destroy();
+  const orgC={};
+  investments.filter(i=>i.status==='active').forEach(i=>{orgC[i.type]=(orgC[i.type]||0)+1;});
+  _orgChart=new Chart(document.getElementById('chart-org').getContext('2d'),{
     type:'bar',
-    data:{labels:Object.keys(orgCounts).map(l=>l.length>20?l.substring(0,20)+'…':l),datasets:[{data:Object.values(orgCounts),backgroundColor:'rgba(124,111,255,0.55)',borderColor:'rgba(124,111,255,0.8)',borderWidth:1.5,borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#8886a0',stepSize:1}},y:{grid:{color:'rgba(255,255,255,0.02)'},ticks:{color:'#8886a0',font:{size:10}}}}}
+    data:{labels:Object.keys(orgC).map(l=>l.length>18?l.slice(0,18)+'…':l),datasets:[{data:Object.values(orgC),backgroundColor:'rgba(124,111,255,.55)',borderColor:'rgba(124,111,255,.8)',borderWidth:1.5,borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8886a0',stepSize:1}},y:{grid:{color:'rgba(255,255,255,.02)'},ticks:{color:'#8886a0',font:{size:10}}}}}
   });
-
-  const geoCounts = {};
-  investments.filter(i=>i.status==='active'&&i.loc).forEach(i=>{geoCounts[i.loc]=(geoCounts[i.loc]||0)+1;});
-  if (geoChart) geoChart.destroy();
-  geoChart = new Chart(document.getElementById('chart-geo').getContext('2d'), {
+  const geoC={};
+  investments.filter(i=>i.status==='active'&&i.loc).forEach(i=>{geoC[i.loc]=(geoC[i.loc]||0)+1;});
+  _geoChart=new Chart(document.getElementById('chart-geo').getContext('2d'),{
     type:'doughnut',
-    data:{labels:Object.keys(geoCounts),datasets:[{data:Object.values(geoCounts),backgroundColor:['rgba(200,169,110,0.7)','rgba(124,111,255,0.7)','rgba(78,207,164,0.7)','rgba(91,191,223,0.7)','rgba(224,107,125,0.6)'],borderColor:'var(--surface)',borderWidth:3,hoverOffset:5}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'bottom',labels:{color:'#8886a0',font:{size:11},padding:8,boxWidth:12}}}}
+    data:{labels:Object.keys(geoC),datasets:[{data:Object.values(geoC),backgroundColor:['rgba(200,169,110,.7)','rgba(124,111,255,.7)','rgba(78,207,164,.7)','rgba(91,191,223,.7)','rgba(224,107,125,.6)'],borderColor:'#17171f',borderWidth:3,hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'bottom',labels:{color:'#8886a0',font:{size:11},padding:8,boxWidth:11}}}}
   });
 }
 
-// ── EXPORT ──
-function openExportModal() {
-  document.getElementById('modal-content').innerHTML = `
-    <div class="modal-header"><div class="modal-title">Export to Excel</div><button class="modal-close" onclick="forceCloseModal()">✕</button></div>
-    <p style="color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.6;">Choose which sections to include. Each becomes its own sheet.</p>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px;">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px;"><input type="checkbox" id="exp-talks" checked style="accent-color:var(--accent);width:15px;height:15px;"> 🎤 Talks, Panels &amp; Interviews <span style="color:var(--muted);font-size:12px;">(${data.talks.length} entries)</span></label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px;"><input type="checkbox" id="exp-writing" checked style="accent-color:var(--accent);width:15px;height:15px;"> ✍️ Writing <span style="color:var(--muted);font-size:12px;">(${data.writing.length} entries)</span></label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px;"><input type="checkbox" id="exp-consulting" checked style="accent-color:var(--accent);width:15px;height:15px;"> 💡 Consultations <span style="color:var(--muted);font-size:12px;">(${data.consulting.length} entries)</span></label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px;"><input type="checkbox" id="exp-investments" checked style="accent-color:var(--accent);width:15px;height:15px;"> 📊 Investments <span style="color:var(--muted);font-size:12px;">(${investments.length} entries)</span></label>
-    </div>
-    <div class="btn-row"><button class="btn btn-primary" onclick="runExport()">⬇ Download Excel</button><button class="btn btn-ghost" onclick="forceCloseModal()">Cancel</button></div>`;
-  document.getElementById('modal-overlay').classList.add('open');
+// ─── MODALS ─────────────────────────────────────────────────────────
+const FORM_FIELDS = {
+  talks: [
+    {id:'m-title',label:'Title / Topic',ph:'Talk title or topic',full:false},
+    {id:'m-type',label:'Type',type:'select',opts:['Keynote','Conference Talk','Panelist','Moderator','Chair','Discussant','Media Interview','Podcast','Webinar','Quoted / Press','Peer Reviewer','Other'],full:false},
+    {id:'m-venue',label:'Event / Venue',ph:'Conference or platform',full:false},
+    {id:'m-date',label:'Date',type:'date',full:false},
+    {id:'m-reach',label:'Audience / Context',ph:'e.g. 200 attendees',full:false},
+    {id:'m-link',label:'Link / Recording',ph:'https://...',full:false},
+    {id:'m-notes',label:'Notes',type:'textarea',ph:'Key themes, outcomes...',full:true},
+  ],
+  writing: [
+    {id:'m-title',label:'Title',ph:'Article or report title',full:false},
+    {id:'m-type',label:'Type',type:'select',opts:['Research Report','Article','Op-Ed','Blog Post','Policy Brief','Other'],full:false},
+    {id:'m-venue',label:'Publication / Platform',ph:'Where published?',full:false},
+    {id:'m-date',label:'Date',type:'date',full:false},
+    {id:'m-reach',label:'Status',type:'select',opts:['Published','In Review','Draft'],full:false},
+    {id:'m-link',label:'Link',ph:'https://...',full:false},
+    {id:'m-notes',label:'Notes',type:'textarea',ph:'Abstract or key findings...',full:true},
+  ],
+  consulting: [
+    {id:'m-title',label:'Topic / Request',ph:'What were you consulted on?',full:false},
+    {id:'m-type',label:'Type',type:'select',opts:['Internal','External'],full:false},
+    {id:'m-venue',label:'Requesting Team / Org',ph:'Who requested it?',full:false},
+    {id:'m-date',label:'Date',type:'date',full:false},
+    {id:'m-reach',label:'Duration (hrs)',type:'number',ph:'e.g. 2',full:false},
+    {id:'m-link',label:'Follow-up / Outcome',ph:'Action items or decision',full:false},
+    {id:'m-notes',label:'Notes',type:'textarea',ph:'Context, recommendations...',full:true},
+  ]
+};
+
+function buildForm(type) {
+  const today=new Date().toISOString().split('T')[0];
+  const fields=FORM_FIELDS[type];
+  let html='<div class="fg">';
+  fields.forEach(f=>{
+    const cls=f.full?'fgfull':'';
+    html+=`<div class="${cls}"><label class="flabel">${f.label}</label>`;
+    if(f.type==='select') html+=`<select class="fsel" id="${f.id}">${f.opts.map(o=>`<option>${o}</option>`).join('')}</select>`;
+    else if(f.type==='textarea') html+=`<textarea class="ftxt" id="${f.id}" placeholder="${f.ph||''}"></textarea>`;
+    else if(f.type==='date') html+=`<input class="fin" type="date" id="${f.id}" value="${today}">`;
+    else if(f.type==='number') html+=`<input class="fin" type="number" id="${f.id}" placeholder="${f.ph||''}" step="0.5">`;
+    else html+=`<input class="fin" id="${f.id}" placeholder="${f.ph||''}">`;
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
 }
+
+function openAdd(type) {
+  const titles={talks:'Add Talk, Panel or Interview',writing:'Add Writing',consulting:'Add Consultation'};
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-hd"><div class="modal-title">${titles[type]}</div><button class="modal-x" onclick="closeModal()">✕</button></div>
+    ${buildForm(type)}
+    <div class="btn-row"><button class="btn btn-p" onclick="saveNew('${type}')">Save</button><button class="btn btn-g" onclick="closeModal()">Cancel</button></div>`;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function openEdit(type,id) {
+  const e=data[type].find(x=>x.id===id);
+  if(!e) return;
+  const titles={talks:'Edit Entry',writing:'Edit Writing',consulting:'Edit Consultation'};
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-hd"><div class="modal-title">${titles[type]}</div><button class="modal-x" onclick="closeModal()">✕</button></div>
+    ${buildForm(type)}
+    <div class="btn-row"><button class="btn btn-p" onclick="saveEdit('${type}',${id})">Save Changes</button><button class="btn btn-g" onclick="closeModal()">Cancel</button></div>`;
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>{
+    ['title','type','venue','date','reach','link','notes'].forEach(k=>{
+      const el=document.getElementById('m-'+k);
+      if(el) el.value=e[k]||'';
+    });
+  },20);
+}
+
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+
+function saveNew(type) {
+  const title=document.getElementById('m-title')?.value;
+  const date=document.getElementById('m-date')?.value;
+  if(!title||!date){toast('⚠️ Title and date are required.');return;}
+  data[type].push({
+    id:Date.now(),
+    title,
+    type:document.getElementById('m-type')?.value,
+    venue:document.getElementById('m-venue')?.value||'',
+    date,
+    reach:document.getElementById('m-reach')?.value||'',
+    link:document.getElementById('m-link')?.value||'',
+    notes:document.getElementById('m-notes')?.value||''
+  });
+  closeModal(); toast('✅ Entry saved!');
+  if(type==='talks') renderTalks();
+  if(type==='writing') renderWriting();
+  if(type==='consulting') renderConsult();
+  updateStats();
+}
+
+function saveEdit(type,id) {
+  const idx=data[type].findIndex(e=>e.id===id);
+  if(idx===-1) return;
+  data[type][idx]={...data[type][idx],
+    title:document.getElementById('m-title')?.value||'',
+    type:document.getElementById('m-type')?.value||'',
+    venue:document.getElementById('m-venue')?.value||'',
+    date:document.getElementById('m-date')?.value||'',
+    reach:document.getElementById('m-reach')?.value||'',
+    link:document.getElementById('m-link')?.value||'',
+    notes:document.getElementById('m-notes')?.value||''
+  };
+  closeModal(); toast('✅ Entry updated!');
+  if(type==='talks') renderTalks();
+  if(type==='writing') renderWriting();
+  if(type==='consulting') renderConsult();
+  updateStats();
+}
+
+function del(type,id) {
+  data[type]=data[type].filter(e=>e.id!==id);
+  if(type==='talks') renderTalks();
+  if(type==='writing') renderWriting();
+  if(type==='consulting') renderConsult();
+  updateStats(); toast('🗑 Entry removed.');
+}
+
+// ─── EXPORT ─────────────────────────────────────────────────────────
+function openExport() {
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-hd"><div class="modal-title">Export to Excel</div><button class="modal-x" onclick="closeModal()">✕</button></div>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:18px;line-height:1.6;">Choose sections to include — each becomes its own sheet.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;"><input type="checkbox" id="ex-talks" checked style="accent-color:#c8a96e;width:14px;height:14px;"> 🎤 Talks, Panels & Interviews (${data.talks.length})</label>
+      <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;"><input type="checkbox" id="ex-writing" checked style="accent-color:#c8a96e;width:14px;height:14px;"> ✍️ Writing (${data.writing.length})</label>
+      <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;"><input type="checkbox" id="ex-consult" checked style="accent-color:#c8a96e;width:14px;height:14px;"> 💡 Consultations (${data.consulting.length})</label>
+      <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;"><input type="checkbox" id="ex-inv" checked style="accent-color:#c8a96e;width:14px;height:14px;"> 📊 Investments (${investments.length})</label>
+    </div>
+    <div class="btn-row"><button class="btn btn-p" onclick="runExport()">⬇ Download Excel</button><button class="btn btn-g" onclick="closeModal()">Cancel</button></div>`;
+  document.getElementById('overlay').classList.add('open');
+}
+
 function runExport() {
-  if (typeof XLSX === 'undefined') {
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-    s.onload = doExport; s.onerror = ()=>toast('⚠️ Could not load export library.');
+  if(typeof XLSX==='undefined'){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=doExport; s.onerror=()=>toast('⚠️ Could not load export library.');
     document.head.appendChild(s);
   } else doExport();
 }
+
 function doExport() {
-  const wb = XLSX.utils.book_new();
-  const styleSheet = (ws, n) => {
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    const cols = [];
-    for (let C=range.s.c;C<=range.e.c;C++){let max=10;for(let R=range.s.r;R<=range.e.r;R++){const cell=ws[XLSX.utils.encode_cell({r:R,c:C})];if(cell&&cell.v)max=Math.max(max,String(cell.v).length);}cols.push({wch:Math.min(max+2,50)});}
-    ws['!cols']=cols;
-  };
-  if (document.getElementById('exp-talks')?.checked && data.talks.length) {
-    const rows = data.talks.map(e=>({'Title / Topic':e.title,'Type':e.type,'Venue / Event':e.venue,'Date':e.date,'Audience':e.reach,'Link':e.link,'Notes':e.notes}));
-    const ws = XLSX.utils.json_to_sheet(rows); styleSheet(ws);
-    XLSX.utils.book_append_sheet(wb, ws, 'Talks, Panels & Interviews');
-  }
-  if (document.getElementById('exp-writing')?.checked && data.writing.length) {
-    const rows = data.writing.map(e=>({'Title':e.title,'Type':e.type,'Publication':e.venue,'Date':e.date,'Status':e.reach,'Link':e.link,'Notes':e.notes}));
-    const ws = XLSX.utils.json_to_sheet(rows); styleSheet(ws);
-    XLSX.utils.book_append_sheet(wb, ws, 'Writing');
-  }
-  if (document.getElementById('exp-consulting')?.checked && data.consulting.length) {
-    const rows = data.consulting.map(e=>({'Topic':e.title,'Type':e.type,'Requesting Org':e.venue,'Date':e.date,'Duration (hrs)':e.reach,'Follow-up':e.link,'Notes':e.notes}));
-    const ws = XLSX.utils.json_to_sheet(rows); styleSheet(ws);
-    XLSX.utils.book_append_sheet(wb, ws, 'Consultations');
-  }
-  if (document.getElementById('exp-investments')?.checked) {
-    const rows = investments.map(inv=>({'Partner':inv.name,'Org Type':inv.type,'Decision':inv.decision,'Location':inv.loc,'2025 ($)':inv.y2025||0,'2026 ($)':inv.y2026||0,'2027 ($)':inv.y2027||0,'Impact':inv.impact,'Geo Reach':inv.geo,'Status':inv.status}));
-    const ws = XLSX.utils.json_to_sheet(rows); styleSheet(ws);
-    XLSX.utils.book_append_sheet(wb, ws, 'Investments');
-  }
-  if (!wb.SheetNames.length) { toast('⚠️ No sections selected.'); return; }
-  XLSX.writeFile(wb, `Ashley_Impact_Dashboard_${new Date().toISOString().split('T')[0]}.xlsx`);
-  forceCloseModal();
-  toast('✅ Excel file downloaded!');
+  const wb=XLSX.utils.book_new();
+  const aw=(ws)=>{const rng=XLSX.utils.decode_range(ws['!ref']);const cols=[];for(let C=rng.s.c;C<=rng.e.c;C++){let mx=10;for(let R=rng.s.r;R<=rng.e.r;R++){const cell=ws[XLSX.utils.encode_cell({r:R,c:C})];if(cell&&cell.v)mx=Math.max(mx,String(cell.v).length);}cols.push({wch:Math.min(mx+2,50)});}ws['!cols']=cols;};
+  if(document.getElementById('ex-talks')?.checked&&data.talks.length){const ws=XLSX.utils.json_to_sheet(data.talks.map(e=>({'Title':e.title,'Type':e.type,'Venue':e.venue,'Date':e.date,'Audience':e.reach,'Link':e.link,'Notes':e.notes})));aw(ws);XLSX.utils.book_append_sheet(wb,ws,'Talks, Panels & Interviews');}
+  if(document.getElementById('ex-writing')?.checked&&data.writing.length){const ws=XLSX.utils.json_to_sheet(data.writing.map(e=>({'Title':e.title,'Type':e.type,'Publication':e.venue,'Date':e.date,'Status':e.reach,'Link':e.link,'Notes':e.notes})));aw(ws);XLSX.utils.book_append_sheet(wb,ws,'Writing');}
+  if(document.getElementById('ex-consult')?.checked&&data.consulting.length){const ws=XLSX.utils.json_to_sheet(data.consulting.map(e=>({'Topic':e.title,'Type':e.type,'Org':e.venue,'Date':e.date,'Duration':e.reach,'Follow-up':e.link,'Notes':e.notes})));aw(ws);XLSX.utils.book_append_sheet(wb,ws,'Consultations');}
+  if(document.getElementById('ex-inv')?.checked){const ws=XLSX.utils.json_to_sheet(investments.map(i=>({'Partner':i.name,'Org Type':i.type,'Decision':i.decision,'Location':i.loc,'2025':i.y2025||0,'2026':i.y2026||0,'2027':i.y2027||0,'Impact':i.impact,'Geo':i.geo,'Status':i.status})));aw(ws);XLSX.utils.book_append_sheet(wb,ws,'Investments');}
+  if(!wb.SheetNames.length){toast('⚠️ Select at least one section.');return;}
+  XLSX.writeFile(wb,`Ashley_Dashboard_${new Date().toISOString().split('T')[0]}.xlsx`);
+  closeModal(); toast('✅ Excel downloaded!');
 }
 
-// ── TOAST ──
-function toast(msg) {
-  const c = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className='toast'; t.textContent=msg; c.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity 0.3s';setTimeout(()=>t.remove(),300);},2800);
-}
+// ─── INIT ────────────────────────────────────────────────────────────
+document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-// ── INIT ──
-document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-renderOverview();
+// Load Chart.js then render everything
+const cjsScript = document.createElement('script');
+cjsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+cjsScript.onload = function() { drawOverviewCharts(); };
+document.head.appendChild(cjsScript);
 </script>
 </body>
 </html>
